@@ -1,8 +1,9 @@
 import gulp from 'gulp';
 import sequence from 'gulp-sequence';
 import path from 'path';
+import { getProjectDir } from '../src/utils/common';
 
-const projectDir = process.env.PROJECT_DIR;
+const projectDir = getProjectDir();
 
 gulp.task('copy', () => {
   return gulp.src(path.join(projectDir, 'src'))

@@ -38,7 +38,7 @@ function ratelimit(opts = { type: 'memory' }) {
       limiter = new MemoryLimiter({
         duration: opts.duration || 1,
         points: opts.max || 5,
-      })
+      });
     } else if (opts.type === 'mongo') {
       limiter = new MongoLimiter({
         storeClient: opts.dbConn,
@@ -49,7 +49,7 @@ function ratelimit(opts = { type: 'memory' }) {
     }
 
     if (!limiter) {
-      throw new Error('invalid type of opts for limiter')
+      throw new Error('invalid type of opts for limiter');
     }
 
     const timestamp = Date.now();

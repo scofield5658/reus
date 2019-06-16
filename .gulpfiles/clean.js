@@ -1,8 +1,9 @@
 import gulp from 'gulp';
 import clean from 'gulp-clean';
 import path from 'path';
+import { getProjectDir } from '../src/utils/common';
 
-const projectDir = process.env.PROJECT_DIR;
+const projectDir = getProjectDir();
 
 gulp.task('clean:tmp', () => {
   return gulp.src([path.join(projectDir, '.tmp')], { read: false })

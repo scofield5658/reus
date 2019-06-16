@@ -1,21 +1,12 @@
-const path = require('path');
-const fs = require('fs');
-
-const projectDir = process.env.PROJECT_DIR;
-const config = fs.existsSync(path.join(projectDir, 'config.js')) ? require(path.join(projectDir, 'config.js')) : require('../.config');
+const { getConfig } = require('./utils/common');
+const { registerRoutes } = require('./utils/model');
 
 (async () => {
+  const config = getConfig();
   for (const startup of config.startups) {
     if (typeof startup === 'function') {
       await startup();
     }
-  }
-
-  let router = [];
-  if (typeof config.routers === 'function') {
-    router = await config.routers();
-  } else if (Array.isArray(config.routers)) {
-    router = config.routers;
   }
 
   const Koa = require('koa');
@@ -29,12 +20,12 @@ const config = fs.existsSync(path.join(projectDir, 'config.js')) ? require(path.
     formidable: {
       multipart: false,
       keepExtensions: true,
-      maxFieldsSize: 10 * 1024 * 1024,
-      maxFileSize: config.upload.maxFileSize,
+      maxFieldsSize: config.upload.max_field_size,
+      maxFileSize: config.upload.max_file_size,
     },
     onError: (error, ctx) => {
       ctx.status = 400;
-      ctx.body = new FailResponse(-1, '文件解析错误');
+      ctx.body = new FailResponse(-1, config.upload.err_msg);
       return;
     },
   };
@@ -45,13 +36,19 @@ const config = fs.existsSync(path.join(projectDir, 'config.js')) ? require(path.
 
   for (const middleware of config.middlewares) {
     if (typeof middleware === 'function') {
-      app.use(middleware)
+      app.use(middleware);
     }
   }
 
+  let router;
+  if (typeof config.routers === 'function') {
+    router = registerRoutes(await config.routers());
+  } else if (Array.isArray(config.routers)) {
+    router = registerRoutes(config.routers);
+  }
   app.use(router.routes(), router.allowedMethods());
 
   console.log(`server started at: ${(new Date)}`);
-  console.log(`current env is: ${config.env}`);
-  app.listen(config.port);
+  console.log(`current env is: ${config.app.env}`);
+  app.listen(config.app.port);
 })();

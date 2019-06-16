@@ -1,19 +1,10 @@
-export class FailResponse {
-  constructor(code, desc) {
-    this.err_code = code;
-    this.err_desc = desc;
-  }
-};
+const { SuccessResponse, FailResponse } = require('./response');
+const Controller = require('./controller');
+const Middleware = require('./middleware');
 
-export class SuccessResponse {
-  constructor(code, desc, data) {
-    this.err_code = code;
-    this.err_desc = desc;
-    this.data = data;
-  }
-};
-
-export default {
+module.exports = {
   SuccessResponse,
   FailResponse,
-}
+  Controller,
+  Middleware,
+};

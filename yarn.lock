@@ -2929,6 +2929,11 @@ eventemitter3@1.x.x:
   resolved "https://registry.npm.taobao.org/eventemitter3/download/eventemitter3-1.2.0.tgz#1c86991d816ad1e504750e73874224ecf3bec508"
   integrity sha1-HIaZHYFq0eUEdQ5zh0Ik7PO+xQg=
 
+eventemitter3@^3.0.0:
+  version "3.1.2"
+  resolved "https://registry.npm.taobao.org/eventemitter3/download/eventemitter3-3.1.2.tgz#2d3d48f9c346698fce83a85d7d664e98535df6e7"
+  integrity sha1-LT1I+cNGaY/Og6hdfWZOmFNd9uc=
+
 execa@^0.7.0:
   version "0.7.0"
   resolved "https://registry.npm.taobao.org/execa/download/execa-0.7.0.tgz#944becd34cc41ee32a63a9faf27ad5a65fc59777"
@@ -3177,6 +3182,13 @@ follow-redirects@1.5.10:
   integrity sha1-e3qfmuov3/NnhqlP9kPtB/T/Xio=
   dependencies:
     debug "=3.1.0"
+
+follow-redirects@^1.0.0:
+  version "1.7.0"
+  resolved "https://registry.npm.taobao.org/follow-redirects/download/follow-redirects-1.7.0.tgz#489ebc198dc0e7f64167bd23b03c4c19b5784c76"
+  integrity sha1-SJ68GY3A5/ZBZ70jsDxMGbV4THY=
+  dependencies:
+    debug "^3.2.6"
 
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
@@ -3774,6 +3786,16 @@ http-errors@~1.6.2:
     setprototypeof "1.1.0"
     statuses ">= 1.4.0 < 2"
 
+http-proxy-middleware@^0.19.1:
+  version "0.19.1"
+  resolved "https://registry.npm.taobao.org/http-proxy-middleware/download/http-proxy-middleware-0.19.1.tgz#183c7dc4aa1479150306498c210cdaf96080a43a"
+  integrity sha1-GDx9xKoUeRUDBkmMIQza+WCApDo=
+  dependencies:
+    http-proxy "^1.17.0"
+    is-glob "^4.0.0"
+    lodash "^4.17.11"
+    micromatch "^3.1.10"
+
 http-proxy@1.15.2:
   version "1.15.2"
   resolved "https://registry.npm.taobao.org/http-proxy/download/http-proxy-1.15.2.tgz#642fdcaffe52d3448d2bda3b0079e9409064da31"
@@ -3781,6 +3803,15 @@ http-proxy@1.15.2:
   dependencies:
     eventemitter3 "1.x.x"
     requires-port "1.x.x"
+
+http-proxy@^1.17.0:
+  version "1.17.0"
+  resolved "https://registry.npm.taobao.org/http-proxy/download/http-proxy-1.17.0.tgz#7ad38494658f84605e2f6db4436df410f4e5be9a"
+  integrity sha1-etOElGWPhGBeL220Q230EPTlvpo=
+  dependencies:
+    eventemitter3 "^3.0.0"
+    follow-redirects "^1.0.0"
+    requires-port "^1.0.0"
 
 iconv-lite@0.4.11:
   version "0.4.11"
@@ -4404,6 +4435,11 @@ koa-router@^7.4.0:
     methods "^1.0.1"
     path-to-regexp "^1.1.1"
     urijs "^1.19.0"
+
+koa2-connect@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npm.taobao.org/koa2-connect/download/koa2-connect-1.0.2.tgz#cf196d70a4e6a055f717522768d26cdfc5396f7b"
+  integrity sha1-zxltcKTmoFX3F1InaNJs38U5b3s=
 
 koa@^2.7.0:
   version "2.7.0"
@@ -5946,7 +5982,7 @@ require-main-filename@^1.0.1:
   resolved "https://registry.npm.taobao.org/require-main-filename/download/require-main-filename-1.0.1.tgz#97f717b69d48784f5f526a6c5aa8ffdda055a4d1"
   integrity sha1-l/cXtp1IeE9fUmpsWqj/3aBVpNE=
 
-requires-port@1.x.x:
+requires-port@1.x.x, requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npm.taobao.org/requires-port/download/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=

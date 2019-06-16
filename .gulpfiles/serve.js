@@ -2,10 +2,10 @@ import gulp from 'gulp';
 import nodemon from 'gulp-nodemon';
 import browserSync from 'browser-sync';
 import path from 'path';
-import fs from 'fs';
+import { getProjectDir, getConfig } from '../src/utils/common';
 
-const projectDir = process.env.PROJECT_DIR;
-let config = fs.existsSync(path.join(projectDir, 'config.js')) ? require(path.join(projectDir, 'config.js')) : require('../.config');
+const projectDir = getProjectDir();
+let config = getConfig();
 
 gulp.task('nodemon', () => {
   nodemon({
@@ -13,7 +13,7 @@ gulp.task('nodemon', () => {
     watch: [path.join(projectDir, 'src'), path.join(projectDir, 'config.js')],
     ext: 'js',
   }).on('restart', () => {
-    config = fs.existsSync(path.join(projectDir, 'config.js')) ? require(path.join(projectDir, 'config.js')) : require('../.config');
+    config = getConfig();
     setTimeout(() => {
       browserSync.reload({
         stream: false
