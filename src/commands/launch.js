@@ -4,39 +4,34 @@ var fs = require('fs');
 var program = require('commander');
 var child_process = require('child_process');
 var log = require('fancy-log');
+var MODES = require('../constants/mode');
 
 program
-  .command('build <entry>')
-  .description('build app in specific mode')
-  .option('-o, --output [value]', 'build dir, use ./dist by default')
+  .command('launch <entry>')
+  .description('launch app in specific mode')
+  .option('-m, --mode [value]', 'mode, eg. dev/prod, use dev by default')
   .action(function (entry, options) {
     var project_dir = path.isAbsolute(entry) ? entry : path.resolve(process.cwd(), entry);
-    var output_dir;
-    if (options.output) {
-      output_dir = path.isAbsolute(options.output) ? options.output : path.resolve(process.cwd(), options.output);
-    } else {
-      output_dir = path.resolve(project_dir, 'dist');
-    }
     process.env.REUS_PROJECT_DIR = project_dir;
-    process.env.REUS_PROJECT_OUTPUT = output_dir;
+    process.env.NODE_ENV = MODES.includes(options.mode) ? options.mode : 'dev';
     log.info(`========== Project Dir: ${process.env.REUS_PROJECT_DIR} ==========`);
-    log.info(`========== Output Dir: ${process.env.REUS_PROJECT_OUTPUT} ==========`);
+    log.info(`========== Running Mode: ${process.env.NODE_ENV} ==========`);
 
     var gulpEntry = `${path.resolve(__dirname, '..', '..', 'node_modules', '.bin', 'gulp')}`;
     if (fs.existsSync(gulpEntry)) {
       if (os.platform() === 'win32') {
-        bootstrap = child_process.spawn(gulpEntry, ['build']);
+        bootstrap = child_process.spawn(gulpEntry, ['serve']);
       } else {
-        bootstrap = child_process.spawn('node', [gulpEntry, 'build']);
+        bootstrap = child_process.spawn('node', [gulpEntry, 'serve']);
       }
     } else {
       // gulp in devDependency
       gulpEntry = `${path.resolve(__dirname, '..', '..', '..', 'gulp', 'bin', 'gulp.js')}`;
       if (fs.existsSync(gulpEntry)) {
         if (os.platform() === 'win32') {
-          bootstrap = child_process.spawn(gulpEntry, ['build']);
+          bootstrap = child_process.spawn(gulpEntry, ['serve']);
         } else {
-          bootstrap = child_process.spawn('node', [gulpEntry, 'build']);
+          bootstrap = child_process.spawn('node', [gulpEntry, 'serve']);
         }
       } else {
         throw new Error('No Gulp Or Reus Is Broken ...');
