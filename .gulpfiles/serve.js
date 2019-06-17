@@ -10,7 +10,7 @@ let config = getConfig();
 gulp.task('nodemon', () => {
   nodemon({
     script: './.bin/dev.js',
-    watch: [path.join(projectDir, 'src'), path.join(projectDir, 'config.js')],
+    watch: [path.join(projectDir, 'src')],
     ext: 'js',
   }).on('restart', () => {
     config = getConfig();
@@ -34,7 +34,7 @@ gulp.task('serve', ['clean:tmp', 'nodemon'], () => {
     notify: config.browserSync.notify,
     scriptPath: config.browserSync.domain && function (path) {
       return `//${config.browserSync.domain}` + path;
-    } ,
+    },
     socket: {
       domain: config.browserSync.domain
     }

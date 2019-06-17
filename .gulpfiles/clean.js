@@ -11,7 +11,7 @@ gulp.task('clean:tmp', () => {
 });
 
 gulp.task('clean:dist', () => {
-  return gulp.src([path.join(projectDir, '.dist')], { read: false })
+  return gulp.src([path.join(projectDir, 'dist')], { read: false })
     .pipe(clean({ force: true }));
 });
 

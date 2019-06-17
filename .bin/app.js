@@ -1,3 +1,3 @@
 require('babel-register');
 require('babel-polyfill');
-require('../src/app.js');
+require(process.env.ENTRY || '../src/app.js');
