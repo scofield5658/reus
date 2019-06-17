@@ -8,9 +8,10 @@ const getProjectDir = () => {
 
 exports.getProjectDir = getProjectDir;
 
-exports.getConfig = () => {
+exports.getConfig = (env = process.env.NODE_ENV) => {
   const projectDir = getProjectDir();
-  const ext_config = fs.existsSync(path.join(projectDir, 'reus.config.js')) ? require(path.join(projectDir, 'reus.config.js')) : {};
+  const sourceDir = (!env || env === 'dev') ? 'src' : 'dist';
+  const ext_config = fs.existsSync(path.join(projectDir, sourceDir, 'reus.config.js')) ? require(path.join(projectDir, sourceDir, 'reus.config.js')) : {};
   return {
     ...default_config,
     ...ext_config,

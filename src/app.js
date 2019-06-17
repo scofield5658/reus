@@ -1,5 +1,5 @@
 const { getConfig } = require('./utils/common');
-const { registerRoutes } = require('./utils/model');
+const { registerMiddleware, registerRoutes } = require('./utils/model');
 
 (async () => {
   const config = getConfig();
@@ -35,9 +35,8 @@ const { registerRoutes } = require('./utils/model');
   app.use(KoaBody(UPLOAD_CONFIG));
 
   for (const middleware of config.middlewares) {
-    if (typeof middleware === 'function') {
-      app.use(middleware);
-    }
+    const middlewareInstance = registerMiddleware(middleware);
+    app.use(middlewareInstance);
   }
 
   let router;
@@ -49,6 +48,5 @@ const { registerRoutes } = require('./utils/model');
   app.use(router.routes(), router.allowedMethods());
 
   console.log(`server started at: ${(new Date)}`);
-  console.log(`current env is: ${config.app.env}`);
   app.listen(config.app.port);
 })();

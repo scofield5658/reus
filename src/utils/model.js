@@ -1,14 +1,26 @@
 const Router = require('koa-router');
 const c2k = require('koa2-connect');
 const proxy = require('http-proxy-middleware');
-const { FailResponse } = require('../models');
+const { FailResponse, Controller, Middleware } = require('../models');
 
-const registerController = () => {
-
+const registerMiddleware = (middleware) => {
+  if (middleware instanceof Middleware) {
+    return (ctx, next) => {
+      const instance = new middleware(ctx, next);
+      return instance.index();
+    };
+  }
+  throw 'unknown middleware constructor';
 };
 
-const registerMiddleware = () => {
-
+const registerController = (controller) => {
+  if (controller instanceof Controller) {
+    return (ctx) => {
+      const instance = new controller(ctx);
+      return instance.index();
+    };
+  }
+  throw 'unknown controller constructor';
 };
 
 const registerRoutes = (routes = []) => {
@@ -38,7 +50,7 @@ const registerRoutes = (routes = []) => {
       iterator(path, child);
     }
 
-    const middlewares = (Array.isArray(route.middlewares) ? route.middlewares : []).filter(Boolean);
+    const middlewares = (Array.isArray(route.middlewares) ? route.middlewares : []).map(registerMiddleware);
 
     let pathRewrite = undefined;
     if (!route.method) {
@@ -51,7 +63,7 @@ const registerRoutes = (routes = []) => {
       pathRewrite[originPath] = targetPath;
 
       router[route.method].apply(router, [path, ...middlewares, c2k(proxy({
-        target: config.serverUrl,
+        target: route.base_url,
         changeOrigin: false,
         pathRewrite,
         timeout: 30000,
@@ -65,7 +77,8 @@ const registerRoutes = (routes = []) => {
           res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
         }
       }))]);
-    } else if (route.action) {
+    } else if (route.controller) {
+      const action = registerController(route.controller);
       if (route.speed_limit) {
         router[route.method].apply(router, [
           path,
@@ -79,10 +92,10 @@ const registerRoutes = (routes = []) => {
             errmsg: route.speed_limit.errmsg,
             validate: route.speed_limit.validate,
           })),
-          route.action
+          action,
         ]);
       } else {
-        router[route.method].apply(router, [path, ...middlewares, route.action]);
+        router[route.method].apply(router, [path, ...middlewares, action]);
       }
     }
   };
@@ -95,7 +108,7 @@ const registerRoutes = (routes = []) => {
 };
 
 module.exports = {
-  registerController,
   registerMiddleware,
+  registerController,
   registerRoutes,
 };
