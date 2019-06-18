@@ -9,7 +9,7 @@ let config = getConfig();
 
 gulp.task('nodemon', () => {
   nodemon({
-    script: './.bin/dev.js',
+    script: './bin/app.js',
     watch: [path.join(projectDir, 'src')],
     ext: 'js',
   }).on('restart', () => {
