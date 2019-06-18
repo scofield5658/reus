@@ -23,20 +23,21 @@ program
     log.info(`========== Output Dir: ${process.env.REUS_PROJECT_OUTPUT} ==========`);
 
     var gulpEntry = `${path.resolve(__dirname, '..', '..', 'node_modules', '.bin', 'gulp')}`;
+    var reusPath = path.resolve(__dirname, '..', '..', 'gulpfile.js');
     if (fs.existsSync(gulpEntry)) {
       if (os.platform() === 'win32') {
-        bootstrap = child_process.spawn(gulpEntry, ['build']);
+        bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'build']);
       } else {
-        bootstrap = child_process.spawn('node', [gulpEntry, 'build']);
+        bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'build']);
       }
     } else {
       // gulp in devDependency
       gulpEntry = `${path.resolve(__dirname, '..', '..', '..', 'gulp', 'bin', 'gulp.js')}`;
       if (fs.existsSync(gulpEntry)) {
         if (os.platform() === 'win32') {
-          bootstrap = child_process.spawn(gulpEntry, ['build']);
+          bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'build']);
         } else {
-          bootstrap = child_process.spawn('node', [gulpEntry, 'build']);
+          bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'build']);
         }
       } else {
         throw new Error('No Gulp Or Reus Is Broken ...');
