@@ -1,5 +1,7 @@
 {
-  "presets": [ "env" ],
+  "presets": [
+    [ "env", { "loose": true, "modules": false } ]
+  ],
   "plugins": [
     "transform-class-properties",
     "transform-es2015-modules-commonjs",
