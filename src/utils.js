@@ -36,7 +36,7 @@ const registerRoutes = (routes = []) => {
     db = null,
     max = 12,
     duration = 60,
-    validate = (ctx) => ctx.ip,
+    validate,
     errmsg = '请求过于频繁，请稍后再试'
   }) => ({
     type,
@@ -45,7 +45,7 @@ const registerRoutes = (routes = []) => {
     max,
     duration,
     errorMessage: () =>  new FailResponse(-1, errmsg),
-    id: validate,
+    id: validate || function(ctx){ return ctx.ip; },
   });
 
   const iterator = (parent, route) => {
