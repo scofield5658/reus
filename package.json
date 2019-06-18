@@ -1,5 +1,5 @@
 {
-  "name": "reus",
+  "name": "reus-cli",
   "version": "0.0.1",
   "description": "cli for webapp development & deployment by nodejs",
   "main": "./index.js",
