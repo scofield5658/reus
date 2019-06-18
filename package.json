@@ -21,6 +21,7 @@
     "webapp"
   ],
   "dependencies": {
+    "@babel/core": "^7.4.5",
     "@koa/cors": "^2.2.3",
     "babel-core": "6.26.3",
     "babel-eslint": "8.2.6",
