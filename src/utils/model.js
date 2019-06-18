@@ -4,9 +4,7 @@ const proxy = require('http-proxy-middleware');
 const { FailResponse, Controller, Middleware } = require('../models');
 
 const registerMiddleware = (middleware) => {
-  console.log(middleware);
   const temp = new middleware();
-  console.log(temp);
   if (temp instanceof Middleware) {
     return (ctx, next) => {
       const instance = new middleware(ctx, next);

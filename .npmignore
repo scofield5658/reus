@@ -59,7 +59,14 @@ typings/
 
 # temporary directories
 .tmp/
-dist/
+src/
+webpack.config.js
 logs/
 package-lock.json
+yarn.lock
+.npmrc
+.babelrc
+.eslintrc.js
+.eslintignore
+
 .DS_Store
