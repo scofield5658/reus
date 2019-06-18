@@ -3,15 +3,17 @@ const { registerMiddleware, registerRoutes } = require('./utils/model');
 
 (async () => {
   const config = getConfig();
-  for (const startup of config.startups) {
-    if (typeof startup === 'function') {
-      await startup();
+  if (config.startups && Array.isArray(config.startups)) {
+    for (const startup of config.startups) {
+      if (typeof startup === 'function') {
+        await startup();
+      }
     }
   }
 
   const Koa = require('koa');
   const Cors = require('@koa/cors');
-  const KoaBody = require('./modules/koa-body');
+  const KoaBody = require('koa-body');
   const { FailResponse } = require('./models');
 
   const UPLOAD_CONFIG = {
@@ -34,18 +36,23 @@ const { registerMiddleware, registerRoutes } = require('./utils/model');
   app.use(Cors());
   app.use(KoaBody(UPLOAD_CONFIG));
 
-  for (const middleware of config.middlewares) {
-    const middlewareInstance = registerMiddleware(middleware);
-    app.use(middlewareInstance);
+  if (config.middlewares && Array.isArray(config.middlewares)) {
+    for (const middleware of config.middlewares) {
+      const middlewareInstance = registerMiddleware(middleware);
+      app.use(middlewareInstance);
+    }
   }
 
-  let router;
-  if (typeof config.routers === 'function') {
-    router = registerRoutes(await config.routers());
-  } else if (Array.isArray(config.routers)) {
-    router = registerRoutes(config.routers);
+
+  if (config.routers) {
+    let router;
+    if (typeof config.routers === 'function') {
+      router = registerRoutes(await config.routers());
+    } else if (Array.isArray(config.routers)) {
+      router = registerRoutes(config.routers);
+    }
+    app.use(router.routes(), router.allowedMethods());
   }
-  app.use(router.routes(), router.allowedMethods());
 
   console.log(`server started at: ${(new Date)}`);
   app.listen(config.app.port);

@@ -4,8 +4,8 @@ var browserSync = require('browser-sync');
 var path = require('path');
 var { getProjectDir, getConfig } = require('../src/utils/common');
 
-var projectDir = getProjectDir();
-var config = getConfig();
+var projectDir = getProjectDir();;
+var config = {};
 
 gulp.task('nodemon', function() {
   nodemon({
@@ -22,7 +22,8 @@ gulp.task('nodemon', function() {
   });
 });
 
-gulp.task('serve', ['clean:tmp', 'nodemon'], function() {
+gulp.task('serve', ['clean:tmp', 'build', 'nodemon'], function() {
+  config = getConfig();
   browserSync.init({
     proxy: `http://localhost:${config.port}`,
     port: config.browserSync.port,

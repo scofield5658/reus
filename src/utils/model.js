@@ -4,7 +4,10 @@ const proxy = require('http-proxy-middleware');
 const { FailResponse, Controller, Middleware } = require('../models');
 
 const registerMiddleware = (middleware) => {
-  if (middleware instanceof Middleware) {
+  console.log(middleware);
+  const temp = new middleware();
+  console.log(temp);
+  if (temp instanceof Middleware) {
     return (ctx, next) => {
       const instance = new middleware(ctx, next);
       return instance.index();
@@ -14,7 +17,8 @@ const registerMiddleware = (middleware) => {
 };
 
 const registerController = (controller) => {
-  if (controller instanceof Controller) {
+  const temp = new controller();
+  if (temp instanceof Controller) {
     return (ctx) => {
       const instance = new controller(ctx);
       return instance.index();
