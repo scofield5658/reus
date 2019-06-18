@@ -1,3 +1,1 @@
-require('babel-register');
-require('babel-polyfill');
-require('../dist/app.js');
+require('../src/app.js');

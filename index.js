@@ -1,1 +1,1 @@
-module.exports = require('./dist/models');
+module.exports = require('./src/models');

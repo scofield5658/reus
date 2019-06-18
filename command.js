@@ -4,7 +4,7 @@ var fs = require('fs');
 var process = require('process');
 var program = require('commander');
 var flog = require('fancy-log');
-var packageInfo = require('../package.json');
+var packageInfo = require('./package.json');
 
 program.version(packageInfo.version, '-v, --version');
 program.parse(process.argv);

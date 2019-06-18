@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var sequence = require('gulp-sequence');
 var path = require('path');
-var { getProjectDir } = require('../src/utils/common');
+var { getProjectDir } = require('../common');
 
 var projectDir = getProjectDir();
 

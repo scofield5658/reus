@@ -1,7 +1,9 @@
 const Router = require('koa-router');
+const Compose = require('koa-compose');
 const c2k = require('koa2-connect');
 const proxy = require('http-proxy-middleware');
-const { FailResponse, Controller, Middleware } = require('../models');
+const ratelimit = require('./modules/ratelimit');
+const { FailResponse, Controller, Middleware } = require('./models');
 
 const registerMiddleware = (middleware) => {
   const temp = new middleware();
@@ -64,7 +66,7 @@ const registerRoutes = (routes = []) => {
       const targetPath = route.redirect;
       pathRewrite[originPath] = targetPath;
 
-      router[route.method].apply(router, [path, ...middlewares, c2k(proxy({
+      router[route.method](path, Compose(middlewares), c2k(proxy({
         target: route.base_url,
         changeOrigin: false,
         pathRewrite,
@@ -78,14 +80,13 @@ const registerRoutes = (routes = []) => {
           });
           res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
         }
-      }))]);
+      })));
     } else if (route.controller) {
       const action = registerController(route.controller);
       if (route.speed_limit) {
-        router[route.method].apply(router, [
+        router[route.method](
           path,
-          ...middlewares,
-          ratelimit(getRateLimitConfig({
+          Compose(middlewares).concat(ratelimit(getRateLimitConfig({
             type: route.speed_limit.type,
             db: route.speed_limit.db,
             table_name: route.speed_limit.table_name,
@@ -93,11 +94,11 @@ const registerRoutes = (routes = []) => {
             duration: route.speed_limit.duration,
             errmsg: route.speed_limit.errmsg,
             validate: route.speed_limit.validate,
-          })),
+          }))),
           action,
-        ]);
+        );
       } else {
-        router[route.method].apply(router, [path, ...middlewares, action]);
+        router[route.method](path, Compose(middlewares), action);
       }
     }
   };

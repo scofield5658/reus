@@ -1,13 +1,12 @@
 {
-  "name": "reus-cli",
-  "version": "0.0.1",
+  "name": "reus.js",
+  "version": "0.0.3",
   "description": "cli for webapp development & deployment by nodejs",
   "main": "./index.js",
   "bin": {
     "reus": "./bin/shell.js"
   },
   "scripts": {
-    "prepublish": "npm run build",
     "build": "webpack --mode production --config webpack.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,6 +22,7 @@
     "webapp"
   ],
   "dependencies": {
+    "@koa/cors": "^2.2.3",
     "babel-core": "^6.26.3",
     "babel-eslint": "8.2.6",
     "babel-loader": "7.1.4",
@@ -49,17 +49,14 @@
     "gulp-clean": "0.4.0",
     "gulp-nodemon": "2.4.2",
     "gulp-sequence": "1.0.0",
-    "testcafe": "1.2.1"
-  },
-  "devDependencies": {
-    "@koa/cors": "^2.2.3",
     "http-proxy-middleware": "^0.19.1",
     "koa": "^2.7.0",
     "koa-body": "^4.1.0",
+    "koa-compose": "^4.1.0",
     "koa-router": "^7.4.0",
     "koa2-connect": "^1.0.2",
+    "nodemon": "1.18.9",
     "rate-limiter-flexible": "^1.0.2",
-    "webpack": "^4.34.0",
-    "webpack-cli": "^3.3.4"
+    "testcafe": "1.2.1"
   }
 }

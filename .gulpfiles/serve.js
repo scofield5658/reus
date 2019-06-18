@@ -1,8 +1,9 @@
 var gulp = require('gulp');
 var nodemon = require('gulp-nodemon');
+var nodemonEntity = require('nodemon');
 var browserSync = require('browser-sync');
 var path = require('path');
-var { getProjectDir, getProjectConfig } = require('../src/utils/common');
+var { getProjectDir, getProjectConfig } = require('../common');
 
 var projectDir = getProjectDir();;
 var config = {};
@@ -12,6 +13,7 @@ gulp.task('nodemon', function() {
     script: './bin/app.js',
     watch: [path.join(projectDir, 'src')],
     ext: 'js',
+    nodemon: nodemonEntity,
   }).on('restart', function() {
     config = getProjectConfig();
     setTimeout(function() {

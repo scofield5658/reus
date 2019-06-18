@@ -59,7 +59,7 @@ typings/
 
 # temporary directories
 .tmp/
-src/
+dist/
 webpack.config.js
 logs/
 package-lock.json

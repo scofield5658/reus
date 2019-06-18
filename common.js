@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const default_config = require('../../.config');
+const default_config = require('./.config');
 
 const getProjectDir = () => {
   return process.env.REUS_PROJECT_DIR;
@@ -11,10 +11,7 @@ exports.getProjectDir = getProjectDir;
 exports.getProjectConfig = () => {
   const projectDir = getProjectDir();
   const ext_config = fs.existsSync(path.join(projectDir, 'project.config.json')) ? require(path.join(projectDir, 'project.config.json')) : {};
-  return {
-    ...default_config,
-    ...ext_config,
-  };
+  return Object.assign({}, default_config, ext_config);
 };
 
 exports.getAppConfig = (env = process.env.NODE_ENV) => {

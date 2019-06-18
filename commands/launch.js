@@ -17,8 +17,8 @@ program
     log.info(`========== Project Dir: ${process.env.REUS_PROJECT_DIR} ==========`);
     log.info(`========== Running Mode: ${process.env.NODE_ENV} ==========`);
 
-    var gulpEntry = `${path.resolve(__dirname, '..', '..', 'node_modules', '.bin', 'gulp')}`;
-    var reusPath = path.resolve(__dirname, '..', '..', 'gulpfile.js');
+    var gulpEntry = `${path.resolve(__dirname, '..', 'node_modules', '.bin', 'gulp')}`;
+    var reusPath = path.resolve(__dirname, '..', 'gulpfile.js');
     if (fs.existsSync(gulpEntry)) {
       if (os.platform() === 'win32') {
         bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'serve']);
@@ -27,7 +27,7 @@ program
       }
     } else {
       // gulp in devDependency
-      gulpEntry = `${path.resolve(__dirname, '..', '..', '..', 'gulp', 'bin', 'gulp.js')}`;
+      gulpEntry = `${path.resolve(__dirname, '..', '..', 'gulp', 'bin', 'gulp.js')}`;
       if (fs.existsSync(gulpEntry)) {
         if (os.platform() === 'win32') {
           bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'serve']);

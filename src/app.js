@@ -1,5 +1,5 @@
-const { getProjectConfig, getAppConfig } = require('./utils/common');
-const { registerMiddleware, registerRoutes } = require('./utils/model');
+const { getProjectConfig, getAppConfig } = require('../common');
+const { registerMiddleware, registerRoutes } = require('./utils');
 
 (async () => {
   const projectConfig = getProjectConfig();
@@ -44,7 +44,6 @@ const { registerMiddleware, registerRoutes } = require('./utils/model');
     }
   }
 
-
   if (appConfig.routers) {
     let router;
     if (typeof appConfig.routers === 'function') {
@@ -56,5 +55,6 @@ const { registerMiddleware, registerRoutes } = require('./utils/model');
   }
 
   console.log(`server started at: ${(new Date)}`);
+  console.log(`server port: ${projectConfig.app.port}`);
   app.listen(projectConfig.app.port);
 })();
