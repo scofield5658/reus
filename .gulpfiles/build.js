@@ -1,11 +1,11 @@
-import gulp from 'gulp';
-import sequence from 'gulp-sequence';
-import path from 'path';
-import { getProjectDir } from '../src/utils/common';
+var gulp = require('gulp');
+var sequence = require('gulp-sequence');
+var path = require('path');
+var { getProjectDir } = require('../src/utils/common');
 
-const projectDir = getProjectDir();
+var projectDir = getProjectDir();
 
-gulp.task('copy', () => {
+gulp.task('copy', function() {
   return gulp.src(path.join(projectDir, 'src'))
     .pipe(gulp.dest(path.join(projectDir, 'dist')));
 });

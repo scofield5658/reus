@@ -1,20 +1,20 @@
-import gulp from 'gulp';
-import nodemon from 'gulp-nodemon';
-import browserSync from 'browser-sync';
-import path from 'path';
-import { getProjectDir, getConfig } from '../src/utils/common';
+var gulp = require('gulp');
+var nodemon = require('gulp-nodemon');
+var browserSync = require('browser-sync');
+var path = require('path');
+var { getProjectDir, getConfig } = require('../src/utils/common');
 
-const projectDir = getProjectDir();
-let config = getConfig();
+var projectDir = getProjectDir();
+var config = getConfig();
 
-gulp.task('nodemon', () => {
+gulp.task('nodemon', function() {
   nodemon({
     script: './bin/app.js',
     watch: [path.join(projectDir, 'src')],
     ext: 'js',
-  }).on('restart', () => {
+  }).on('restart', function() {
     config = getConfig();
-    setTimeout(() => {
+    setTimeout(function() {
       browserSync.reload({
         stream: false
       });
@@ -22,7 +22,7 @@ gulp.task('nodemon', () => {
   });
 });
 
-gulp.task('serve', ['clean:tmp', 'nodemon'], () => {
+gulp.task('serve', ['clean:tmp', 'nodemon'], function() {
   browserSync.init({
     proxy: `http://localhost:${config.port}`,
     port: config.browserSync.port,

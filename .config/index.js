@@ -1,6 +1,6 @@
-const app = require('./app');
-const browserSync = require('./serve');
-const upload = require('./upload');
+var app = require('./app');
+var browserSync = require('./serve');
+var upload = require('./upload');
 
 module.exports = {
   app,

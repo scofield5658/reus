@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-const path = require('path');
-const fs = require('fs');
-const process = require('process');
-const program = require('commander');
-const flog = require('fancy-log');
-const packageInfo = require('../package.json');
+var path = require('path');
+var fs = require('fs');
+var process = require('process');
+var program = require('commander');
+var flog = require('fancy-log');
+var packageInfo = require('../package.json');
 
 program.version(packageInfo.version, '-v, --version');
 program.parse(process.argv);

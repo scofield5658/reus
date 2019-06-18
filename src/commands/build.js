@@ -44,11 +44,11 @@ program
       }
     }
 
-    bootstrap.stdout.on('data', (chunk) => {
+    bootstrap.stdout.on('data', function(chunk) {
       log.info(chunk.toString());
     });
 
-    bootstrap.stderr.on('data', (chunk) => {
+    bootstrap.stderr.on('data', function(chunk) {
       log.error(chunk.toString());
     });
   });
