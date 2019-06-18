@@ -86,7 +86,7 @@ const registerRoutes = (routes = []) => {
       if (route.speed_limit) {
         router[route.method](
           path,
-          Compose(middlewares).concat(ratelimit(getRateLimitConfig({
+          Compose(middlewares.concat(ratelimit(getRateLimitConfig({
             type: route.speed_limit.type,
             db: route.speed_limit.db,
             table_name: route.speed_limit.table_name,
@@ -94,7 +94,7 @@ const registerRoutes = (routes = []) => {
             duration: route.speed_limit.duration,
             errmsg: route.speed_limit.errmsg,
             validate: route.speed_limit.validate,
-          }))),
+          })))),
           action,
         );
       } else {
