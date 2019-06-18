@@ -2,7 +2,7 @@ var gulp = require('gulp');
 var nodemon = require('gulp-nodemon');
 var browserSync = require('browser-sync');
 var path = require('path');
-var { getProjectDir, getConfig } = require('../src/utils/common');
+var { getProjectDir, getProjectConfig } = require('../src/utils/common');
 
 var projectDir = getProjectDir();;
 var config = {};
@@ -13,7 +13,7 @@ gulp.task('nodemon', function() {
     watch: [path.join(projectDir, 'src')],
     ext: 'js',
   }).on('restart', function() {
-    config = getConfig();
+    config = getProjectConfig();
     setTimeout(function() {
       browserSync.reload({
         stream: false
@@ -23,7 +23,7 @@ gulp.task('nodemon', function() {
 });
 
 gulp.task('serve', ['clean:tmp', 'build', 'nodemon'], function() {
-  config = getConfig();
+  config = getProjectConfig();
   browserSync.init({
     proxy: `http://localhost:${config.port}`,
     port: config.browserSync.port,

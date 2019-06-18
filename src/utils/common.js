@@ -8,12 +8,18 @@ const getProjectDir = () => {
 
 exports.getProjectDir = getProjectDir;
 
-exports.getConfig = (env = process.env.NODE_ENV) => {
+exports.getProjectConfig = () => {
   const projectDir = getProjectDir();
-  const sourceDir = (!env || env === 'dev') ? 'src' : 'dist';
-  const ext_config = fs.existsSync(path.join(projectDir, sourceDir, 'reus.config.js')) ? require(path.join(projectDir, sourceDir, 'reus.config.js')) : {};
+  const ext_config = fs.existsSync(path.join(projectDir, 'project.config.json')) ? require(path.join(projectDir, 'project.config.json')) : {};
   return {
     ...default_config,
     ...ext_config,
   };
+};
+
+exports.getAppConfig = (env = process.env.NODE_ENV) => {
+  const projectDir = getProjectDir();
+  const sourceDir = (!env || env === 'dev') ? 'src' : 'dist';
+  const config = fs.existsSync(path.join(projectDir, sourceDir, 'app.config.js')) ? require(path.join(projectDir, sourceDir, 'app.config.js')) : {};
+  return config;
 };
