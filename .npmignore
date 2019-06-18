@@ -59,7 +59,7 @@ typings/
 
 # temporary directories
 .tmp/
-dest/
+dist/
 logs/
 package-lock.json
 .DS_Store
