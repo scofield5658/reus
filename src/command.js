@@ -10,7 +10,7 @@ program.version(packageInfo.version, '-v, --version');
 program.parse(process.argv);
 
 if (fs.existsSync(path.join(__dirname, 'commands', `${program.args[0]}.js`))) {
-  require(path.join('.', 'commands', program.args[0] ));
+  require(`./commands/${program.args[0]}`);
 } else {
   flog.error(`[error] unknown args: ${program.args[0]}`);
 }
