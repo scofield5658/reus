@@ -8,15 +8,9 @@ var log = require('fancy-log');
 program
   .command('build <entry>')
   .description('build app in specific mode')
-  .option('-o, --output [value]', 'build dir, use ./dist by default')
   .action(function (entry, options) {
     var project_dir = path.isAbsolute(entry) ? entry : path.resolve(process.cwd(), entry);
-    var output_dir;
-    if (options.output) {
-      output_dir = path.isAbsolute(options.output) ? options.output : path.resolve(process.cwd(), options.output);
-    } else {
-      output_dir = path.resolve(project_dir, 'dist');
-    }
+    var output_dir = path.resolve(project_dir, 'dist');
     process.env.REUS_PROJECT_DIR = project_dir;
     process.env.REUS_PROJECT_OUTPUT = output_dir;
     log.info(`========== Project Dir: ${process.env.REUS_PROJECT_DIR} ==========`);
@@ -24,6 +18,7 @@ program
 
     var gulpEntry = `${path.resolve(__dirname, '..', 'node_modules', '.bin', 'gulp')}`;
     var reusPath = path.resolve(__dirname, '..', 'gulpfile.js');
+    var bootstrap;
     if (fs.existsSync(gulpEntry)) {
       if (os.platform() === 'win32') {
         bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'build']);

@@ -13,21 +13,14 @@ program
   .action(function (entry, options) {
     var project_dir = path.isAbsolute(entry) ? entry : path.resolve(process.cwd(), entry);
     process.env.REUS_PROJECT_DIR = project_dir;
-    process.env.NODE_ENV = MODES.includes(options.mode) ? options.mode : 'dev';
+    process.env.REUS_PROJECT_ENV = MODES.includes(options.mode) ? options.mode : 'prod';
     log.info(`========== Project Dir: ${process.env.REUS_PROJECT_DIR} ==========`);
-    log.info(`========== Running Mode: ${process.env.NODE_ENV} ==========`);
+    log.info(`========== Running Mode: ${process.env.REUS_PROJECT_ENV} ==========`);
 
-    var gulpEntry = `${path.resolve(__dirname, '..', 'node_modules', '.bin', 'gulp')}`;
-    var reusPath = path.resolve(__dirname, '..', 'gulpfile.js');
-    if (fs.existsSync(gulpEntry)) {
-      if (os.platform() === 'win32') {
-        bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'serve']);
-      } else {
-        bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'serve']);
-      }
-    } else {
-      // gulp in devDependency
-      gulpEntry = `${path.resolve(__dirname, '..', '..', 'gulp', 'bin', 'gulp.js')}`;
+    var bootstrap;
+    if (process.env.REUS_PROJECT_ENV === 'dev') {
+      var gulpEntry = `${path.resolve(__dirname, '..', 'node_modules', '.bin', 'gulp')}`;
+      var reusPath = path.resolve(__dirname, '..', 'gulpfile.js');
       if (fs.existsSync(gulpEntry)) {
         if (os.platform() === 'win32') {
           bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'serve']);
@@ -35,17 +28,34 @@ program
           bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'serve']);
         }
       } else {
-        throw new Error('No Gulp Or Reus Is Broken ...');
+      // gulp in devDependency
+        gulpEntry = `${path.resolve(__dirname, '..', '..', 'gulp', 'bin', 'gulp.js')}`;
+        if (fs.existsSync(gulpEntry)) {
+          if (os.platform() === 'win32') {
+            bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'serve']);
+          } else {
+            bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'serve']);
+          }
+        } else {
+          throw new Error('No Gulp Or Reus Is Broken ...');
+        }
+      }
+
+      bootstrap.stdout.on('data', function(chunk) {
+        log.info(chunk.toString());
+      });
+
+      bootstrap.stderr.on('data', function(chunk) {
+        log.error(chunk.toString());
+      });
+    } else {
+      var appEntry = `${path.resolve(__dirname, '..', 'bin', 'app.js')}`;
+      if (fs.existsSync(appEntry)) {
+        require(appEntry);
+      } else {
+        throw new Error('Reus Entry Is Broken ...');
       }
     }
-
-    bootstrap.stdout.on('data', function(chunk) {
-      log.info(chunk.toString());
-    });
-
-    bootstrap.stderr.on('data', function(chunk) {
-      log.error(chunk.toString());
-    });
   });
 
 program.parse(process.argv);

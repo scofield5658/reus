@@ -1,13 +1,10 @@
 var gulp = require('gulp');
 var sequence = require('gulp-sequence');
 var path = require('path');
-var { getProjectDir } = require('../common');
-
-var projectDir = getProjectDir();
 
 gulp.task('copy', function() {
-  return gulp.src(path.join(projectDir, 'src'))
-    .pipe(gulp.dest(path.join(projectDir, 'dist')));
+  return gulp.src(path.join(process.env.REUS_PROJECT_DIR, 'src', '**', '*'))
+    .pipe(gulp.dest(process.env.REUS_PROJECT_OUTPUT));
 });
 
 gulp.task('build', sequence(
