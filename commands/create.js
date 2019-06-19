@@ -1,5 +1,4 @@
 var path = require('path');
-var os = require('os');
 var fs = require('fs');
 var program = require('commander');
 var log = require('fancy-log');
@@ -29,7 +28,6 @@ var unzip = function(originfile, filepath) {
     .promise()
     .then(() => {
       del([originfile]);
-      fs.renameSync();
       log.info('done!');
     }, (err) => {
       log.error(err);
