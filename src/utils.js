@@ -55,7 +55,18 @@ const registerRoutes = (routes = []) => {
     }
 
     const middlewares = (Array.isArray(route.middlewares) ? route.middlewares : []).map(registerMiddleware);
-
+    let routeMiddlewares = middlewares || [];
+    if (route.speed_limit) {
+      routeMiddlewares = middlewares.concat(ratelimit(getRateLimitConfig({
+        type: route.speed_limit.type,
+        db: route.speed_limit.db,
+        table_name: route.speed_limit.table_name,
+        max: route.speed_limit.max,
+        duration: route.speed_limit.duration,
+        errmsg: route.speed_limit.errmsg,
+        validate: route.speed_limit.validate,
+      })));
+    }
     let pathRewrite = undefined;
     if (!route.method) {
       throw 'please specify the method of route you set';
@@ -65,40 +76,49 @@ const registerRoutes = (routes = []) => {
       const originPath = `^${path}`;
       const targetPath = route.redirect;
       pathRewrite[originPath] = targetPath;
-
-      router[route.method](path, Compose(middlewares), c2k(proxy({
-        target: route.base_url,
-        changeOrigin: false,
-        pathRewrite,
-        timeout: 30000,
-        proxyTimeout: 30000,
-        secure: false,
-        logLevel: 'warn',
-        onError: function (err, req, res) {
-          res.writeHead(500, {
-            'Content-Type': 'application/json'
-          });
-          res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
-        }
-      })));
+      if (routeMiddlewares.length) {
+        router[route.method](path, Compose(routeMiddlewares), c2k(proxy({
+          target: route.target,
+          changeOrigin: false,
+          pathRewrite,
+          timeout: 30000,
+          proxyTimeout: 30000,
+          secure: false,
+          logLevel: 'warn',
+          onError: function (err, req, res) {
+            res.writeHead(502, {
+              'Content-Type': 'application/json'
+            });
+            res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
+          }
+        })));
+      } else {
+        router[route.method](path, c2k(proxy({
+          target: route.target,
+          changeOrigin: false,
+          pathRewrite,
+          timeout: 30000,
+          proxyTimeout: 30000,
+          secure: false,
+          logLevel: 'warn',
+          onError: function (err, req, res) {
+            res.writeHead(502, {
+              'Content-Type': 'application/json'
+            });
+            res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
+          }
+        })));
+      }
     } else if (route.controller) {
       const action = registerController(route.controller);
-      if (route.speed_limit) {
+      if (routeMiddlewares.length) {
         router[route.method](
           path,
-          Compose(middlewares.concat(ratelimit(getRateLimitConfig({
-            type: route.speed_limit.type,
-            db: route.speed_limit.db,
-            table_name: route.speed_limit.table_name,
-            max: route.speed_limit.max,
-            duration: route.speed_limit.duration,
-            errmsg: route.speed_limit.errmsg,
-            validate: route.speed_limit.validate,
-          })))),
+          Compose(routeMiddlewares),
           action,
         );
       } else {
-        router[route.method](path, Compose(middlewares), action);
+        router[route.method](path, action);
       }
     }
   };
