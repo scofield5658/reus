@@ -100,7 +100,7 @@ const registerRoutes = (routes = []) => {
       router[route.method](
         path,
         Compose(routeMiddlewares),
-        action,
+        action
       );
     } else if (route.view) {
       let payload = { title: route.title || 'reus.title' };
