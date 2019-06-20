@@ -1,5 +1,7 @@
 const { getProjectConfig, getAppConfig } = require('../common');
 const { registerMiddleware, registerRoutes } = require('./utils');
+const httpHelper = require('./helpers/http');
+const jsonHelper = require('./helpers/json');
 
 (async () => {
   const projectConfig = getProjectConfig();
@@ -36,6 +38,8 @@ const { registerMiddleware, registerRoutes } = require('./utils');
   const app = new Koa;
   app.use(Cors());
   app.use(KoaBody(UPLOAD_CONFIG));
+  app.use(jsonHelper);
+  app.use(httpHelper);
 
   if (appConfig.middlewares && Array.isArray(appConfig.middlewares)) {
     for (const middleware of appConfig.middlewares) {
