@@ -15,7 +15,6 @@ const jsonHelper = require('./helpers/json');
   }
 
   const Koa = require('koa');
-  const Cors = require('@koa/cors');
   const KoaBody = require('koa-body');
   const { FailResponse } = require('./models');
 
@@ -36,7 +35,6 @@ const jsonHelper = require('./helpers/json');
   };
 
   const app = new Koa;
-  app.use(Cors());
   app.use(KoaBody(UPLOAD_CONFIG));
   app.use(jsonHelper);
   app.use(httpHelper);
