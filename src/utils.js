@@ -2,8 +2,12 @@ const Router = require('koa-router');
 const Compose = require('koa-compose');
 const c2k = require('koa2-connect');
 const proxy = require('http-proxy-middleware');
+const log = require('fancy-log');
 const ratelimit = require('./modules/ratelimit');
 const { FailResponse, Controller, Middleware } = require('./models');
+const { getAppConfig } = require('../common');
+
+const appConfig = getAppConfig();
 
 const registerMiddleware = (middleware) => {
   const temp = new middleware();
@@ -76,49 +80,41 @@ const registerRoutes = (routes = []) => {
       const originPath = `^${path}`;
       const targetPath = route.redirect;
       pathRewrite[originPath] = targetPath;
-      if (routeMiddlewares.length) {
-        router[route.method](path, Compose(routeMiddlewares), c2k(proxy({
-          target: route.target,
-          changeOrigin: false,
-          pathRewrite,
-          timeout: 30000,
-          proxyTimeout: 30000,
-          secure: false,
-          logLevel: 'warn',
-          onError: function (err, req, res) {
-            res.writeHead(502, {
-              'Content-Type': 'application/json'
-            });
-            res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
-          }
-        })));
-      } else {
-        router[route.method](path, c2k(proxy({
-          target: route.target,
-          changeOrigin: false,
-          pathRewrite,
-          timeout: 30000,
-          proxyTimeout: 30000,
-          secure: false,
-          logLevel: 'warn',
-          onError: function (err, req, res) {
-            res.writeHead(502, {
-              'Content-Type': 'application/json'
-            });
-            res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
-          }
-        })));
-      }
+      router[route.method](path, Compose(routeMiddlewares), c2k(proxy({
+        target: route.target,
+        changeOrigin: false,
+        pathRewrite,
+        timeout: 60000,
+        proxyTimeout: 60000,
+        secure: false,
+        logLevel: 'warn',
+        onError: function (err, req, res) {
+          res.writeHead(502, {
+            'Content-Type': 'application/json'
+          });
+          res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
+        }
+      })));
     } else if (route.controller) {
       const action = registerController(route.controller);
-      if (routeMiddlewares.length) {
-        router[route.method](
-          path,
-          Compose(routeMiddlewares),
-          action,
-        );
+      router[route.method](
+        path,
+        Compose(routeMiddlewares),
+        action,
+      );
+    } else if (route.view) {
+      let payload = { title: route.title || 'reus.title' };
+      if (typeof route.preload === 'function') {
+        payload = Object.assign(payload, route.preload());
+      } else if (typeof route.preload === 'object') {
+        payload = Object.assign(payload, route.preload);
+      }
+      if (typeof appConfig.render === 'function') {
+        router.get(path, Compose(routeMiddlewares), function(ctx) {
+          return appConfig.render(ctx, route.view, payload);
+        });
       } else {
-        router[route.method](path, action);
+        log.error(`Route -> ${path}: render function not exists`);
       }
     }
   };
