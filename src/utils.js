@@ -72,7 +72,7 @@ const registerRoutes = (routes = []) => {
       })));
     }
     let pathRewrite = undefined;
-    if (!route.method) {
+    if (!route.method && !route.view) {
       throw 'please specify the method of route you set';
     }
     if (route.redirect) {
