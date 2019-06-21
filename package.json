@@ -1,6 +1,6 @@
 {
   "name": "reus.js",
-  "version": "0.4.8",
+  "version": "1.0.0",
   "description": "cli for webapp development & deployment by nodejs",
   "main": "./index.js",
   "bin": {
@@ -45,5 +45,11 @@
     "request-promise": "^4.2.4",
     "testcafe": "1.2.1",
     "unzipper": "^0.10.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.2"
+  },
+  "engines" : {
+    "node" : ">=8.9.4"
   }
 }
