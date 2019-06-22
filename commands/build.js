@@ -11,6 +11,7 @@ program
   .action(function (entry, options) {
     var project_dir = path.isAbsolute(entry) ? entry : path.resolve(process.cwd(), entry);
     var output_dir = path.resolve(project_dir, 'dist');
+    process.env.REUS_PROJECT_ENV = 'prod';
     process.env.REUS_PROJECT_DIR = project_dir;
     process.env.REUS_PROJECT_OUTPUT = output_dir;
     log.info(`========== Project Dir: ${process.env.REUS_PROJECT_DIR} ==========`);
