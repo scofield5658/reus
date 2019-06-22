@@ -4,7 +4,7 @@ const { registerMiddleware, registerRoutes } = require('./utils');
 const httpHelper = require('./helpers/http');
 const jsonHelper = require('./helpers/json');
 
-const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { config: v.params, useRender: v.useRender }));
+const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { config: v.params }));
 
 (async () => {
   const projectConfig = getProjectConfig();
@@ -63,7 +63,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
           app.use(plugin_middleware(projectDir, pluginConfig));
         }
       }
-      if (plugin.useRender && !handleRender) {
+      if (!handleRender && typeof plugin.render === 'function') {
         handleRender = plugin.render(projectDir, pluginConfig);
         renderConfig = pluginConfig;
         app.use(function(ctx, next) {
