@@ -5,9 +5,12 @@ const proxy = require('http-proxy-middleware');
 const log = require('fancy-log');
 const ratelimit = require('./modules/ratelimit');
 const { FailResponse, Controller, Middleware } = require('./models');
-const { getAppConfig } = require('../common');
 
-const appConfig = getAppConfig();
+const tgtURL = (url, config = {}) => {
+  const tgtBase = (process.env.REUS_PROJECT_ENV && process.env.REUS_PROJECT_ENV !== 'dev') ?
+    config.cdnUrl : config.baseUrl;
+  return (`${tgtBase || ''}${url.replace(/\\/gmi, '/').replace(/^\/pages/, '')}`).replace(/\\/gmi, '/');
+};
 
 const registerMiddleware = (middleware) => {
   const temp = new middleware();
@@ -31,7 +34,7 @@ const registerController = (controller) => {
   throw 'unknown controller constructor';
 };
 
-const registerRoutes = (routes = []) => {
+const registerRoutes = (routes = [], routeConfig = {}) => {
   const router = new Router();
 
   const getRateLimitConfig = ({
@@ -53,15 +56,14 @@ const registerRoutes = (routes = []) => {
   });
 
   const iterator = (parent, route) => {
-    const path = `${parent}${route.path}`;
+    const routepath = `${parent}${route.path}`;
     for (const child of route.children || []) {
-      iterator(path, child);
+      iterator(routepath, child);
     }
 
     const middlewares = (Array.isArray(route.middlewares) ? route.middlewares : []).map(registerMiddleware);
-    let routeMiddlewares = middlewares || [];
     if (route.speed_limit) {
-      routeMiddlewares = middlewares.concat(ratelimit(getRateLimitConfig({
+      middlewares.push(ratelimit(getRateLimitConfig({
         type: route.speed_limit.type,
         db: route.speed_limit.db,
         table_name: route.speed_limit.table_name,
@@ -77,10 +79,10 @@ const registerRoutes = (routes = []) => {
     }
     if (route.redirect) {
       pathRewrite = {};
-      const originPath = `^${path}`;
+      const originPath = `^${tgtURL(routepath, routeConfig)}`;
       const targetPath = route.redirect;
       pathRewrite[originPath] = targetPath;
-      router[route.method](path, Compose(routeMiddlewares), c2k(proxy({
+      router[route.method](tgtURL(routepath, routeConfig), Compose(middlewares), c2k(proxy({
         target: route.target,
         changeOrigin: false,
         pathRewrite,
@@ -98,8 +100,8 @@ const registerRoutes = (routes = []) => {
     } else if (route.controller) {
       const action = registerController(route.controller);
       router[route.method](
-        path,
-        Compose(routeMiddlewares),
+        tgtURL(routepath, routeConfig),
+        Compose(middlewares),
         action
       );
     } else if (route.view) {
@@ -109,13 +111,15 @@ const registerRoutes = (routes = []) => {
       } else if (typeof route.preload === 'object') {
         payload = Object.assign(payload, route.preload);
       }
-      if (typeof appConfig.render === 'function') {
-        router.get(path, Compose(routeMiddlewares), function(ctx) {
-          return appConfig.render(ctx, route.view, payload);
-        });
-      } else {
-        log.error(`Route -> ${path}: render function not exists`);
-      }
+
+      router.get(tgtURL(routepath, routeConfig), Compose(middlewares), function(ctx) {
+        if (typeof ctx.render === 'function') {
+          return ctx.render(ctx, route.view, payload);
+        }
+        log.error(`Route -> ${tgtURL(routepath, routeConfig)}: render function not exists`);
+        ctx.body = `Route -> ${tgtURL(routepath, routeConfig)}: render function not exists`;
+        ctx.status = 404;
+      });
     }
   };
 

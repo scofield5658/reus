@@ -1,7 +1,10 @@
-const { getProjectConfig, getAppConfig } = require('../common');
+const path = require('path');
+const { getProjectDir, getProjectConfig, getAppConfig, getPlugins, getPlugin } = require('../common');
 const { registerMiddleware, registerRoutes } = require('./utils');
 const httpHelper = require('./helpers/http');
 const jsonHelper = require('./helpers/json');
+
+const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { config: v.params, useRender: v.useRender }));
 
 (async () => {
   const projectConfig = getProjectConfig();
@@ -46,12 +49,37 @@ const jsonHelper = require('./helpers/json');
     }
   }
 
+  let handleRender;
+  let renderConfig = {};
+  if (Array.isArray(plugins)) {
+    for (let i = 0; i < plugins.length; i += 1) {
+      const plugin = plugins[i];
+      const projectDir = getProjectDir();
+      const configDir = path.join(projectDir, plugin.config);
+      const pluginConfig = configDir && require(configDir) || {};
+      if (Array.isArray(plugin.launch)) {
+        for (let j = 0; j < plugin.launch.length; j += 1) {
+          const plugin_middleware = plugin.launch[j];
+          app.use(plugin_middleware(projectDir, pluginConfig));
+        }
+      }
+      if (plugin.useRender && !handleRender) {
+        handleRender = plugin.render(projectDir, pluginConfig);
+        renderConfig = pluginConfig;
+        app.use(function(ctx, next) {
+          ctx.render = handleRender;
+          return next();
+        });
+      }
+    }
+  }
+
   if (appConfig.routers) {
     let router;
     if (typeof appConfig.routers === 'function') {
-      router = registerRoutes(await appConfig.routers());
+      router = registerRoutes(await appConfig.routers(), renderConfig);
     } else if (Array.isArray(appConfig.routers)) {
-      router = registerRoutes(appConfig.routers);
+      router = registerRoutes(appConfig.routers, renderConfig);
     }
     app.use(router.routes(), router.allowedMethods());
   }

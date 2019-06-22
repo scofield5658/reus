@@ -40,23 +40,26 @@ exports.getProjectFilePath = function(files = []) {
 
 exports.getPlugins = function() {
   const projectConfig = getProjectConfig();
-  return projectConfig.buildPlugins || [];
+  return projectConfig.plugins || [];
 };
 
 exports.getPlugin = function(name) {
   const projectDir = getProjectDir();
-  if (!fs.existsSync(path.join(projectDir, 'plugins'))) {
-    throw 'plugins directory not found';
-  }
   if (!name) {
     throw 'plugin name is not specific';
   }
-  if (!fs.existsSync(path.join(projectDir, 'plugins', `${name}.js`))) {
-    throw `plugin:${name} not found`;
+
+  if (!fs.existsSync(path.join(projectDir, 'node_modules', name))) {
+    throw `${name} not found in node_modules`;
   }
-  const handler = require(path.join(projectDir, 'plugins', `${name}`));
-  if (typeof handler === 'function') {
-    return handler;
+
+  const packageInfo = require(path.join(projectDir, 'node_modules', name, 'package.json'));
+  const entry = packageInfo.main || 'index.js';
+
+  if (!fs.existsSync(path.join(projectDir, 'node_modules', name, entry))) {
+    throw `${name} has no entry`;
   }
-  throw `plugin:${name} is not a function`;
+
+  const handler = require(path.join(projectDir, 'node_modules', name, entry));
+  return handler;
 };

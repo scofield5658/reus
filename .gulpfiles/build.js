@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var sequence = require('gulp-sequence');
 var path = require('path');
-var { getPlugins, getPlugin } = require('../common');
+var { getProjectDir, getPlugins, getPlugin } = require('../common');
 
 var reservedTaskName = ['copy', 'build', 'serve', 'clean:dist', 'clean:tmp'];
 var sequences = [
@@ -16,10 +16,14 @@ for (let index = 0; index < plugins.length; index += 1) {
     throw 'invalid plugin name'
   }
   var handler = getPlugin(pluginName);
-  gulp.task(pluginName, function() {
-    return handler(gulp, plugins[index].params || {});
-  })
-  sequences.push(pluginName);
+  var buildHandler = handler.build;
+  if (buildHandler) {
+    const params = plugins[index].params && require(path.join(getProjectDir(), plugins[index].params)) || {};
+    gulp.task(pluginName, function() {
+      return buildHandler(getProjectDir(), params)(gulp);
+    })
+    sequences.push(pluginName);
+  }
 }
 
 gulp.task('copy', function() {
