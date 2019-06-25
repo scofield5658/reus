@@ -47,16 +47,86 @@ Node.js >= 8.9.4 required. (I do not test it in any node environment lower than 
   ```
 
 - Create a Controller
+  ```javascript
+  const { Controller } = require('reus.js');
 
+  class HelloController extends Controller {
+    async index() {
+      const { ctx } = this;
+      ctx.json({ data: 'hello from HelloController' });
+    }
+  }
+
+  module.exports = HelloController;
+  ```
 - Create a Middleware
+  ```javascript
+  const { Middleware } = require('reus.js');
+
+  class LogMiddleware extends Middleware {
+    async index() {
+      const { ctx, next } = this;
+      console.log(`[${new Date()}]${ctx.url}:${ctx.method}`);
+      return next();
+    }
+  }
+
+  module.exports = LogMiddleware;
+  ```
 
 - Build-in Methods
 
+  1. ```ctx.json```: Stringify your response
+  2. ```ctx.http```: Send a request with [request](https://github.com/request/request)
+
+- How to run
+
+  1. ```project.config.json```
+    ```json
+      {
+        "app": {
+          "port": 5658
+        }
+      }
+    ```
+  2. ```src/routers.js```
+    ```javascript
+    module.exports = [
+      {
+        path: '/hello',
+        method: 'get',
+        controller: require('../controllers/hello')
+      }
+    ];
+    ```
+  3. ```src/app.config.js```
+
+    ```javascript
+    const logger = require('./middlewares/logger');
+    const routers = require('./routers');
+
+    module.exports = {
+      routers,
+      middlewares: [logger],
+    };
+    ```
+
+  4. Run Dev Mode
+
+    ```bash
+    $ reus launch . --mode dev
+    ```
+
 - How to build
 
-- How to deploy
+  ```bash
+  $ reus build .
+  ```
 
-- Plugin
+- How to deploy
+  ```bash
+  $ reus launch .
+  ```
 
 ## License
 
