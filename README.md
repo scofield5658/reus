@@ -41,7 +41,7 @@ Node.js >= 8.9.4 required. (I do not test it in any node environment lower than 
 
 - Initialization
   ```bash
-  $ reus create -t scofield5658/reus-simple-starter
+  $ reus create -t simple
   $ cd reus-simple-starter
   $ npm i
   ```

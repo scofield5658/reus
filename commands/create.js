@@ -37,11 +37,11 @@ var unzip = function(originfile, filepath) {
 program
   .command('create')
   .description('create app by specific template in current directory')
-  .option('-t, --template [value]', 'template, eg. scofield5658/reus-simple-starter, used by default')
+  .option('-t, --template [value]', 'template, eg. simple, used by default')
   .action(function (options) {
     var project_dir = path.join(process.cwd());
-    var repo_name = `${options.template || 'scofield5658/reus-simple-starter'}`;
-    var template_uri = `https://github.com/${repo_name}/archive/master.zip`;
+    var template_name = `${options.template || 'simple'}`;
+    var template_uri = `https://github.com/scofield5658/reus-${template_name}-starter/archive/master.zip`;
 
     log.info(`========== Current Dir: ${project_dir} ==========`);
     log.info(`========== Template: ${template_uri} ==========`);
