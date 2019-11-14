@@ -18,8 +18,9 @@ program
     log.info(`========== Running Mode: ${process.env.REUS_PROJECT_ENV} ==========`);
 
     var bootstrap;
+    var gulpShell = os.platform() === 'win32' ? 'gulp.cmd' : 'gulp';
     if (process.env.REUS_PROJECT_ENV === 'dev') {
-      var gulpEntry = `${path.resolve(__dirname, '..', 'node_modules', '.bin', 'gulp')}`;
+      var gulpEntry = `${path.resolve(__dirname, '..', 'node_modules', '.bin', gulpShell)}`;
       var reusPath = path.resolve(__dirname, '..', 'gulpfile.js');
       if (fs.existsSync(gulpEntry)) {
         if (os.platform() === 'win32') {

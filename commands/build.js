@@ -17,7 +17,8 @@ program
     log.info(`========== Project Dir: ${process.env.REUS_PROJECT_DIR} ==========`);
     log.info(`========== Output Dir: ${process.env.REUS_PROJECT_OUTPUT} ==========`);
 
-    var gulpEntry = `${path.resolve(__dirname, '..', 'node_modules', '.bin', 'gulp')}`;
+    var gulpShell = os.platform() === 'win32' ? 'gulp.cmd' : 'gulp';
+    var gulpEntry = `${path.resolve(__dirname, '..', 'node_modules', '.bin', gulpShell)}`;
     var reusPath = path.resolve(__dirname, '..', 'gulpfile.js');
     var bootstrap;
     if (fs.existsSync(gulpEntry)) {
