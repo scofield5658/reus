@@ -17,11 +17,13 @@ for (let index = 0; index < plugins.length; index += 1) {
   }
   var handler = getPlugin(pluginName);
   var buildHandler = handler.build;
-  if (buildHandler) {
+  if (buildHandler && typeof buildHandler === 'function') {
     const params = plugins[index].params && require(path.join(getProjectDir(), plugins[index].params)) || {};
-    gulp.task(pluginName, function() {
-      return buildHandler(getProjectDir(), params)(gulp);
-    })
+    (function(handler) {
+      gulp.task(pluginName, function() {
+        return handler(getProjectDir(), params)(gulp);
+      })
+    })(buildHandler)
     sequences.push(pluginName);
   }
 }
