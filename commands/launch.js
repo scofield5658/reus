@@ -43,11 +43,11 @@ program
       }
 
       bootstrap.stdout.on('data', function(chunk) {
-        log.info(chunk.toString());
+        console.info(chunk.toString());
       });
 
       bootstrap.stderr.on('data', function(chunk) {
-        log.error(chunk.toString());
+        console.error(chunk.toString());
       });
     } else {
       var appEntry = `${path.resolve(__dirname, '..', 'bin', 'app.js')}`;
