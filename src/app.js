@@ -11,14 +11,12 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
   const appConfig = getAppConfig();
   if (appConfig.startups && Array.isArray(appConfig.startups)) {
     await (function() {
-      return new Promise((resolve) => {
-        appConfig.startups.reduce((prev, startup) => {
-          if (typeof startup === 'function') {
-            return prev.then(startup);
-          }
-          return resolve();
-        }, resolve());
-      });
+      return appConfig.startups.reduce((prev, startup) => {
+        if (typeof startup === 'function') {
+          return prev.then(() => startup());
+        }
+        return prev.then(() => resolve());
+      }, Promise.resolve());
     })();
   }
 
