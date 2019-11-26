@@ -10,11 +10,16 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
   const projectConfig = getProjectConfig();
   const appConfig = getAppConfig();
   if (appConfig.startups && Array.isArray(appConfig.startups)) {
-    for (const startup of appConfig.startups) {
-      if (typeof startup === 'function') {
-        await startup();
-      }
-    }
+    await (function() {
+      return new Promise((resolve) => {
+        appConfig.startups.reduce((prev, startup) => {
+          if (typeof startup === 'function') {
+            return prev.then(startup);
+          }
+          return resolve();
+        }, resolve());
+      });
+    })();
   }
 
   const Koa = require('koa');
