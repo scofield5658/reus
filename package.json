@@ -1,6 +1,6 @@
 {
   "name": "reus.js",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "cli for webapp development & deployment by nodejs",
   "main": "./index.js",
   "bin": {
@@ -48,6 +48,6 @@
     "testcafe": "^1.6.1"
   },
   "engines" : {
-    "node" : ">=8.9.4"
+    "node" : ">=8.9.0"
   }
 }
