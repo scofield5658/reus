@@ -7,7 +7,7 @@
 
 [npm-image]: https://img.shields.io/npm/v/reus.js.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/reus.js
-[node-image]: https://img.shields.io/badge/node.js-%3E=_8.9.4-green.svg?style=flat-square
+[node-image]: https://img.shields.io/badge/node.js-%3E=_8.9.0-green.svg?style=flat-square
 [node-url]: http://nodejs.org/download/
 [download-image]: https://img.shields.io/npm/dm/reus.js.svg?style=flat-square
 [download-url]: https://npmjs.org/package/reus.js
@@ -29,7 +29,7 @@ Reus.js has the core consideration for enterprise situation. Dealing with multip
 $ npm install -g reus.js
 ```
 
-Node.js >= 8.9.4 required. (I do not test it in any node environment lower than that version. Someone may have a nice try O(∩_∩)O~~)
+Node.js >= 8.9.0 required. (I do not test it in any node environment lower than that version. Someone may have a nice try O(∩_∩)O~~)
 
 ## Features
 
