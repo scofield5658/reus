@@ -1,27 +1,36 @@
-var gulp = require('gulp');
-var sequence = require('gulp-sequence');
-var path = require('path');
-var { getProjectDir, getPlugins, getPlugin } = require('../common');
+const gulp = require('gulp');
+const sequence = require('gulp-sequence');
+const path = require('path');
+const { getProjectDir, getPlugins, getPlugin } = require('../common');
 
-var reservedTaskName = ['copy', 'build', 'serve', 'clean:dist', 'clean:tmp'];
-var sequences = [
+const reservedTaskName = ['copy', 'build', 'serve', 'clean:dist', 'clean:tmp'];
+const sequences = [
   ['clean:dist', 'clean:tmp'],
   'copy'
 ];
 
-var plugins = getPlugins();
-for (let index = 0; index < plugins.length; index += 1) {
-  var pluginName = plugins[index].name;
-  if (!pluginName || reservedTaskName.indexOf(pluginName) > -1) {
-    throw 'invalid plugin name'
+const plugins = getPlugins();
+if (plugins.length) {
+  let mixins = {};
+  for (let index = plugins.length - 1; index > 0; index -= 1) {
+    const pluginName = plugins[index].name;
+    if (!pluginName || reservedTaskName.indexOf(pluginName) > -1) {
+      throw 'invalid plugin name'
+    }
+    const handler = getPlugin(pluginName);
+    if (typeof handler.mixins === 'object') {
+      mixins = Object(mixins, handler.mixins);
+    }
   }
-  var handler = getPlugin(pluginName);
-  var buildHandler = handler.build;
+
+  const pluginName = plugins[0].name;
+  const handler = getPlugin(pluginName);
+  const buildHandler = handler.build;
   if (buildHandler && typeof buildHandler === 'function') {
-    const params = plugins[index].params && require(path.join(getProjectDir(), plugins[index].params)) || {};
+    const params = plugins[0].params && require(path.join(getProjectDir(), plugins[0].params)) || {};
     (function(handler) {
       gulp.task(pluginName, function() {
-        return handler(getProjectDir(), params)(gulp);
+        return handler(getProjectDir(), params, mixins)(gulp);
       })
     })(buildHandler)
     sequences.push(pluginName);
@@ -33,5 +42,5 @@ gulp.task('copy', function() {
     .pipe(gulp.dest(process.env.REUS_PROJECT_OUTPUT));
 });
 
-var gulpSequence = sequence.apply(this, sequences)
+const gulpSequence = sequence.apply(this, sequences)
 gulp.task('build', gulpSequence);
