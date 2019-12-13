@@ -18,8 +18,8 @@ if (plugins.length) {
       throw 'invalid plugin name'
     }
     const handler = getPlugin(pluginName);
-    if (typeof handler.mixins === 'object') {
-      mixins = Object(mixins, handler.mixins);
+    if (handler.mixins) {
+      mixins = Object.assign(mixins, handler.mixins);
     }
   }
 
