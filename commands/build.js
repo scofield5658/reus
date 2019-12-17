@@ -22,7 +22,7 @@ program
     var reusPath = path.resolve(__dirname, '..', 'gulpfile.js');
     var bootstrap;
     if (fs.existsSync(gulpEntry)) {
-      bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'build']);
+      bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'build']);
     } else {
       // gulp in devDependency
       gulpEntry = `${path.resolve(__dirname, '..', '..', 'gulp', 'bin', 'gulp.js')}`;
