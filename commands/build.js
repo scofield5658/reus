@@ -22,20 +22,12 @@ program
     var reusPath = path.resolve(__dirname, '..', 'gulpfile.js');
     var bootstrap;
     if (fs.existsSync(gulpEntry)) {
-      if (os.platform() === 'win32') {
-        bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'build']);
-      } else {
-        bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'build']);
-      }
+      bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'build']);
     } else {
       // gulp in devDependency
       gulpEntry = `${path.resolve(__dirname, '..', '..', 'gulp', 'bin', 'gulp.js')}`;
       if (fs.existsSync(gulpEntry)) {
-        if (os.platform() === 'win32') {
-          bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'build']);
-        } else {
-          bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'build']);
-        }
+        bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'build']);
       } else {
         throw new Error('No Gulp Or Reus Is Broken ...');
       }
