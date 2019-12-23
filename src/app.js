@@ -47,7 +47,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
 
   if (appConfig.middlewares && Array.isArray(appConfig.middlewares)) {
     for (const middleware of appConfig.middlewares) {
-      const middlewareInstance = registerMiddleware(middleware);
+      const middlewareInstance = registerMiddleware(middleware, app);
       app.use(middlewareInstance);
     }
   }

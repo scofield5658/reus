@@ -12,11 +12,11 @@ const tgtURL = (url, config = {}) => {
   return (`${tgtBase || ''}${url.replace(/\\/gmi, '/').replace(/^\/pages/, '')}`).replace(/\\/gmi, '/');
 };
 
-const registerMiddleware = (middleware) => {
+const registerMiddleware = (middleware, app) => {
   const temp = new middleware();
   if (temp instanceof Middleware) {
     return (ctx, next) => {
-      const instance = new middleware(ctx, next);
+      const instance = new middleware(ctx, next, app);
       return instance.index();
     };
   }
