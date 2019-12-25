@@ -13,25 +13,23 @@ const tgtURL = (url, config = {}) => {
 };
 
 const registerMiddleware = (middleware, app) => {
-  const temp = new middleware();
-  if (temp instanceof Middleware) {
-    return (ctx, next) => {
-      const instance = new middleware(ctx, next, app);
+  return (ctx, next) => {
+    const instance = new middleware(ctx, next, app);
+    if (instance instanceof Middleware) {
       return instance.index();
-    };
-  }
-  throw 'unknown middleware constructor';
+    }
+    throw 'unknown middleware constructor';
+  };
 };
 
 const registerController = (controller) => {
-  const temp = new controller();
-  if (temp instanceof Controller) {
-    return (ctx) => {
-      const instance = new controller(ctx);
+  return (ctx) => {
+    const instance = new controller(ctx);
+    if (instance instanceof Controller) {
       return instance.index();
-    };
-  }
-  throw 'unknown controller constructor';
+    }
+    throw 'unknown controller constructor';
+  };
 };
 
 const registerRoutes = (routes = [], routeConfig = {}) => {
