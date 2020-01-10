@@ -1,6 +1,7 @@
 const path = require('path');
 const { getProjectDir, getProjectConfig, getAppConfig, getPlugins, getPlugin } = require('../common');
 const { registerMiddleware, registerRoutes } = require('./utils');
+const staticHandler = require('./modules/static');
 const httpHelper = require('./helpers/http');
 const jsonHelper = require('./helpers/json');
 
@@ -67,6 +68,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
         }
       }
       if (!handleRender && typeof plugin.render === 'function') {
+        app.use(staticHandler(pluginConfig));
         handleRender = plugin.render(projectDir, pluginConfig);
         renderConfig = pluginConfig;
         app.use(function(ctx, next) {

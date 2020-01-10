@@ -1,5 +1,5 @@
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 const default_config = require('./.config');
 
 const getProjectDir = function() {
@@ -62,4 +62,25 @@ exports.getPlugin = function(name) {
 
   const handler = require(path.join(projectDir, 'node_modules', name, entry));
   return handler;
+};
+
+const absDest = (relpath) => {
+  const projectDir = getProjectDir();
+  return path.join(projectDir, 'dist', relpath).replace(/\//gmi, path.sep);
+};
+
+exports.renderStatic = (ctx, filepath) => {
+  return new Promise((resolve) => {
+    fs.readFile(absDest(filepath), 'binary', (err, data)=>{
+      if(err) {
+        ctx.type = 'text/html;charset=utf-8';
+        ctx.body = err.message;
+        resolve();
+        return;
+      }
+      ctx.type = 'text/html;charset=utf-8';
+      ctx.body = data;
+      resolve();
+    });
+  });
 };

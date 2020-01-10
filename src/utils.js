@@ -3,6 +3,7 @@ const Compose = require('koa-compose');
 const c2k = require('koa2-connect');
 const proxy = require('http-proxy-middleware');
 const log = require('fancy-log');
+const { renderStatic } = require('../common');
 const ratelimit = require('./modules/ratelimit');
 const { FailResponse, Controller, Middleware } = require('./models');
 
@@ -111,6 +112,9 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
       }
 
       router.get(tgtURL(routepath, routeConfig), Compose(middlewares), function(ctx) {
+        if (route.view.indexOf('html') > -1) {
+          return renderStatic(ctx, route.view);
+        }
         if (typeof ctx.render === 'function') {
           return ctx.render(ctx, route.view, payload);
         }

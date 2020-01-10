@@ -38,8 +38,10 @@ if (plugins.length) {
 }
 
 gulp.task('copy', function() {
-  return gulp.src(path.join(process.env.REUS_PROJECT_DIR, 'src', '**', '*'))
-    .pipe(gulp.dest(process.env.REUS_PROJECT_OUTPUT));
+  return gulp.src([
+    path.join(process.env.REUS_PROJECT_DIR, 'src', '**', '*'),
+    `!${path.join(process.env.REUS_PROJECT_DIR, 'src', 'pages', '**', 'node_modules', '**', '*')}`
+  ]).pipe(gulp.dest(process.env.REUS_PROJECT_OUTPUT));
 });
 
 const gulpSequence = sequence.apply(this, sequences)
