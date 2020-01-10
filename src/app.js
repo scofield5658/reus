@@ -63,7 +63,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
       if (Array.isArray(plugin.launch)) {
         for (let j = 0; j < plugin.launch.length; j += 1) {
           const plugin_middleware = plugin.launch[j];
-          app.use(plugin_middleware(projectDir, pluginConfig));
+          app.use(plugin_middleware(projectDir, pluginConfig, projectConfig));
         }
       }
       if (!handleRender && typeof plugin.render === 'function') {
