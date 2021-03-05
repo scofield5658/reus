@@ -1,6 +1,7 @@
+const path = require('path');
 const gulp = require('gulp');
 const sequence = require('gulp-sequence');
-const path = require('path');
+const babel = require('gulp-babel');
 const { getProjectDir, getPlugins, getPlugin } = require('../common');
 
 const reservedTaskName = ['copy', 'build', 'serve', 'clean:dist', 'clean:tmp'];
@@ -41,7 +42,21 @@ gulp.task('copy', function() {
   return gulp.src([
     path.join(process.env.REUS_PROJECT_DIR, 'src', '**', '*'),
     `!${path.join(process.env.REUS_PROJECT_DIR, 'src', 'pages', '**', 'node_modules', '**', '*')}`
-  ]).pipe(gulp.dest(process.env.REUS_PROJECT_OUTPUT));
+  ])
+    .pipe(babel({
+      presets: [
+        ['env', {
+          modules: 'commonjs',
+          targets: { node: 'current' }
+        }]
+      ],
+      plugins: [
+        'syntax-dynamic-import',
+        'transform-object-rest-spread',
+        'transform-runtime'
+      ]
+    }))
+    .pipe(gulp.dest(process.env.REUS_PROJECT_OUTPUT));
 });
 
 const gulpSequence = sequence.apply(this, sequences)

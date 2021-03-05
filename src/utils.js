@@ -1,7 +1,7 @@
 const Router = require('koa-router');
 const Compose = require('koa-compose');
-const c2k = require('koa2-connect');
-const proxy = require('http-proxy-middleware');
+const c2k = require('koa-connect');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const log = require('fancy-log');
 const { renderStatic } = require('../common');
 const ratelimit = require('./modules/ratelimit');
@@ -50,7 +50,7 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
     dbConn: db,
     max,
     duration,
-    errorMessage: () =>  new FailResponse(-1, errmsg),
+    errorMessage: () => new FailResponse(-1, errmsg),
     id: validate || function(ctx){ return ctx.ip; },
   });
 
@@ -72,30 +72,29 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
         validate: route.speed_limit.validate,
       })));
     }
-    let pathRewrite = undefined;
     if (!route.method && !route.view) {
       throw 'please specify the method of route you set';
     }
     if (route.redirect) {
-      pathRewrite = {};
-      const originPath = `^${tgtURL(routepath, routeConfig)}`;
-      const targetPath = route.redirect;
-      pathRewrite[originPath] = targetPath;
-      router[route.method](tgtURL(routepath, routeConfig), Compose(middlewares), c2k(proxy({
+      throw 'please remove redirect property and use proxyPattern';
+    }
+    if (route.proxyPattern) {
+      const proxyServer = createProxyMiddleware(route.proxyPattern, {
         target: route.target,
-        changeOrigin: false,
-        pathRewrite,
-        timeout: 60000,
-        proxyTimeout: 60000,
+        changeOrigin: true,
+        pathRewrite: route.pathRewrite,
+        timeout: 30000,
+        proxyTimeout: 30000,
         secure: false,
-        logLevel: 'warn',
+        logLevel: route.loglevel || 'warn',
         onError: function (err, req, res) {
           res.writeHead(502, {
             'Content-Type': 'application/json'
           });
           res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
         }
-      })));
+      })
+      router[route.method](tgtURL(routepath, routeConfig), Compose(middlewares), c2k(proxyServer));
     } else if (route.controller) {
       const action = registerController(route.controller);
       router[route.method](
