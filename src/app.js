@@ -1,6 +1,6 @@
 const path = require('path');
 const { getProjectDir, getProjectConfig, getAppConfig, getPlugins, getPlugin } = require('../common');
-const { registerMiddleware, registerRoutes } = require('./utils');
+const { registerMiddleware, registerRoutes, registerProxies } = require('./utils');
 const staticHandler = require('./modules/static');
 const httpHelper = require('./helpers/http');
 const jsonHelper = require('./helpers/json');
@@ -42,10 +42,8 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
   };
 
   const app = new Koa;
-  app.use(KoaBody(UPLOAD_CONFIG));
-  app.use(jsonHelper);
-  app.use(httpHelper);
 
+  // global middleware
   if (appConfig.middlewares && Array.isArray(appConfig.middlewares)) {
     for (const middleware of appConfig.middlewares) {
       const middlewareInstance = registerMiddleware(middleware, app);
@@ -53,6 +51,22 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
     }
   }
 
+  // proxy routers
+  if (appConfig.routers) {
+    let proxies;
+    if (typeof appConfig.routers === 'function') {
+      proxies = registerProxies(await appConfig.routers(), {});
+    } else if (Array.isArray(appConfig.routers)) {
+      proxies = registerProxies(appConfig.routers, {});
+    }
+    app.use(proxies.routes(), proxies.allowedMethods());
+  }
+
+  app.use(KoaBody(UPLOAD_CONFIG));
+  app.use(jsonHelper);
+  app.use(httpHelper);
+
+  // global plugins
   let handleRender;
   let renderConfig = {};
   if (Array.isArray(plugins)) {
@@ -79,6 +93,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
     }
   }
 
+  // normal routers
   if (appConfig.routers) {
     let router;
     if (typeof appConfig.routers === 'function') {

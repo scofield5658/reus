@@ -77,24 +77,6 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
     }
     if (route.redirect) {
       throw 'please remove redirect property and use proxyPattern';
-    }
-    if (route.proxyPattern) {
-      const proxyServer = createProxyMiddleware(route.proxyPattern, {
-        target: route.target,
-        changeOrigin: true,
-        pathRewrite: route.pathRewrite,
-        timeout: 30000,
-        proxyTimeout: 30000,
-        secure: false,
-        logLevel: route.loglevel || 'warn',
-        onError: function (err, req, res) {
-          res.writeHead(502, {
-            'Content-Type': 'application/json'
-          });
-          res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
-        }
-      })
-      router[route.method](tgtURL(routepath, routeConfig), Compose(middlewares), c2k(proxyServer));
     } else if (route.controller) {
       const action = registerController(route.controller);
       router[route.method](
@@ -131,8 +113,46 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
   return router;
 };
 
+const registerProxies = (routes = [], routeConfig = {}) => {
+  const router = new Router();
+
+  const iterator = (parent, route) => {
+    const routepath = `${parent}${route.path}`;
+    for (const child of route.children || []) {
+      iterator(routepath, child);
+    }
+
+    const middlewares = (Array.isArray(route.middlewares) ? route.middlewares : []).map(registerMiddleware);
+    if (route.proxyPattern) {
+      const proxyServer = createProxyMiddleware(route.proxyPattern, {
+        target: route.target,
+        changeOrigin: true,
+        pathRewrite: route.pathRewrite,
+        timeout: 30000,
+        proxyTimeout: 30000,
+        secure: false,
+        logLevel: route.loglevel || 'warn',
+        onError: function (err, req, res) {
+          res.writeHead(502, {
+            'Content-Type': 'application/json'
+          });
+          res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
+        }
+      })
+      router[route.method](tgtURL(routepath, routeConfig), Compose(middlewares), c2k(proxyServer));
+    }
+  };
+
+  routes.forEach((route) => {
+    iterator('', route);
+  });
+
+  return router;
+};
+
 module.exports = {
   registerMiddleware,
   registerController,
   registerRoutes,
+  registerProxies,
 };
