@@ -25,7 +25,7 @@ gulp.task('nodemon', function() {
   });
 });
 
-gulp.task('serve', ['clean:tmp', 'nodemon'], function() {
+gulp.task('serve', gulp.series('clean:tmp', 'nodemon'), function() {
   browserSync.init({
     proxy: `http://localhost:${projectConfig.browserSync.port}`,
     files: getProjectFilePath(projectConfig.browserSync.files || []),

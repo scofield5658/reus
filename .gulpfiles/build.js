@@ -1,12 +1,12 @@
 const path = require('path');
 const gulp = require('gulp');
-const sequence = require('gulp-sequence');
 const babel = require('gulp-babel');
 const { getProjectDir, getPlugins, getPlugin } = require('../common');
 
 const reservedTaskName = ['copy', 'build', 'serve', 'clean:dist', 'clean:tmp'];
 const sequences = [
-  ['clean:dist', 'clean:tmp'],
+  'clean:dist',
+  'clean:tmp',
   'copy'
 ];
 
@@ -59,5 +59,4 @@ gulp.task('copy', function() {
     .pipe(gulp.dest(process.env.REUS_PROJECT_OUTPUT));
 });
 
-const gulpSequence = sequence.apply(this, sequences)
-gulp.task('build', gulpSequence);
+gulp.task('build', gulp.series(...sequences));
