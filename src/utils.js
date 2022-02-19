@@ -128,8 +128,8 @@ const registerProxies = (routes = [], routeConfig = {}) => {
         target: route.target,
         changeOrigin: true,
         pathRewrite: route.pathRewrite,
-        timeout: 30000,
-        proxyTimeout: 30000,
+        timeout: route.timeout || 120000,
+        proxyTimeout: route.proxyTimeout || 120000,
         secure: false,
         logLevel: route.loglevel || 'warn',
         onError: function (err, req, res) {
