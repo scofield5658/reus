@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "target": "es5",
+    "module": "es2015",
+    "outDir": "types",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "noImplicitAny": false,
+    "allowJs": true,
+    "strict": false,
+    "allowSyntheticDefaultImports": true,
+    "noEmitOnError": true
+  },
+  "include": [
+    "./src/**/*",
+    "./index.js"
+  ]
+}

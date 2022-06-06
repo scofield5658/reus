@@ -1,10 +1,12 @@
+const Koa = require('koa');
+
 class Middleware {
   /**
   * @constructor Middleware
   * @description If you want to override it, please call super(ctx, next) first.
-  * @param {Object} ctx koa.context
-  * @param {Promise} next koa.next
-  * @param {Object} app koa.app
+  * @param {Koa.Context} ctx koa.context
+  * @param {Koa.Next} next koa.next
+  * @param {Koa<Koa.DefaultState, Koa.DefaultContext>} app koa.app
   */
   constructor(ctx, next, app) {
     this.ctx = ctx;

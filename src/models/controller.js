@@ -1,8 +1,10 @@
+const Koa = require('koa');
+
 class Controller {
   /**
   * @constructor Controller
   * @description If you want to override it, please call super(ctx) first.
-  * @param {Object} ctx koa.context
+  * @param {Koa.Context} ctx koa.context
   */
   constructor(ctx) {
     this.ctx = ctx;

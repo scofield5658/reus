@@ -1,15 +1,17 @@
 {
   "name": "reus.js",
-  "version": "3.0.5",
+  "version": "3.1.0",
   "description": "cli for webapp development & deployment by nodejs",
   "main": "./index.js",
+  "typings": "types/index.d.ts",
   "bin": {
     "reus": "./bin/shell.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "declaration": "tsc"
   },
-  "author": "guozhi <guozhi5658@gmail.com>",
+  "author": "guoz5658 <guoz5658@outlook.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,6 +23,7 @@
     "webapp"
   ],
   "dependencies": {
+    "@types/koa": "^2.13.1",
     "babel-core": "^6.26.3",
     "babel-eslint": "^10.0.2",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
@@ -53,7 +56,8 @@
   "devDependencies": {
     "eslint": "^6.7.2",
     "eslint-plugin-testcafe": "^0.2.1",
-    "testcafe": "^1.12.0"
+    "testcafe": "^1.12.0",
+    "typescript": "4.1.3"
   },
   "engines": {
     "node": ">=8.9.0"
