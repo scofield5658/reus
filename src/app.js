@@ -1,4 +1,7 @@
 const path = require('path');
+const { koaSwagger } = require('koa2-swagger-ui');
+const yamljs = require('yamljs');
+
 const { getProjectDir, getProjectConfig, getAppConfig, getPlugins, getPlugin } = require('../common');
 const { registerMiddleware, registerRoutes, registerProxies } = require('./utils');
 const staticHandler = require('./modules/static');
@@ -42,6 +45,24 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
   };
 
   const app = new Koa;
+
+  // swagger
+  if (process.env.REUS_PROJECT_ENV === 'dev' && appConfig.swaggerYmlFile && typeof appConfig.swaggerYmlFile === 'string') {
+    try {
+      const projectDir = getProjectDir();
+      const yamlInfos = yamljs.load(path.isAbsolute(appConfig.swaggerYmlFile) ? appConfig.swaggerYmlFile : path.join(projectDir, appConfig.swaggerYmlFile));
+      app.use(
+        koaSwagger({
+          routePrefix: '/swagger/index.html',
+          swaggerOptions: {
+            spec: yamlInfos,
+          },
+        }),
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   // global middleware
   if (appConfig.middlewares && Array.isArray(appConfig.middlewares)) {
