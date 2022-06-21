@@ -54,9 +54,9 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
       app.use(
         koaSwagger({
           routePrefix: '/swagger/index.html',
+          swaggerCdnUrl: appConfig.swaggerCdnUrl,
           swaggerOptions: {
             spec: yamlInfos,
-            swaggerCdnUrl: appConfig.swaggerCdnUrl,
           },
         }),
       );
