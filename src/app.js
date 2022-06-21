@@ -56,6 +56,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
           routePrefix: '/swagger/index.html',
           swaggerOptions: {
             spec: yamlInfos,
+            swaggerCdnUrl: appConfig.swaggerCdnUrl,
           },
         }),
       );

@@ -108,6 +108,8 @@ Node.js >= 8.9.0 required. (I do not test it in any node environment lower than 
     module.exports = {
       routers,
       middlewares: [logger],
+      swaggerYmlFile: "some-path-to-swagger-yaml-file",
+      swaggerCdnUrl: "custom-swagger-cdnurl"
     };
     ```
 
