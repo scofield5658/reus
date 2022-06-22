@@ -15,6 +15,8 @@
 
 > cli for webapp development &amp; deployment by nodejs
 
+![REUS LOGO](./reus.png)
+
 ## What is it
 
 Reus.js is a webapp framework based on koa.js, which utilizes a useful consequence of the encapsulation principle. Developers are easily focused on implementations for production/business requirements, rather than the versions of dependencies or the scaffold a team project required.
