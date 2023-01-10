@@ -25,7 +25,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
   }
 
   const Koa = require('koa');
-  const KoaBody = require('koa-body');
+  const KoaBody = require('koa-body').default;
   const { FailResponse } = require('./models');
 
   const UPLOAD_CONFIG = {
@@ -38,9 +38,8 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
       maxFileSize: projectConfig.upload.max_file_size,
     },
     onError: (error, ctx) => {
-      ctx.status = 400;
-      ctx.body = new FailResponse(-1, projectConfig.upload.err_msg);
-      return;
+      const errMsg = projectConfig.upload.err_msg;
+      ctx.throw(400, errMsg);
     },
   };
 
