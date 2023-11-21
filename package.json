@@ -1,6 +1,6 @@
 {
   "name": "reus.js",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "cli for webapp development & deployment by nodejs",
   "main": "./index.js",
   "typings": "types/index.d.ts",

@@ -43,7 +43,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
     },
   };
 
-  const app = new Koa;
+  const app = new Koa(projectConfig.koaConfig);
 
   // swagger
   if (process.env.REUS_PROJECT_ENV === 'dev' && appConfig.swaggerYmlFile && typeof appConfig.swaggerYmlFile === 'string') {
