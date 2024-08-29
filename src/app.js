@@ -26,7 +26,6 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
 
   const Koa = require('koa');
   const KoaBody = require('koa-body').default;
-  const { FailResponse } = require('./models');
 
   const UPLOAD_CONFIG = {
     encoding: 'utf-8',
@@ -46,17 +45,22 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
   const app = new Koa(projectConfig.koaConfig);
 
   // swagger
-  if (process.env.REUS_PROJECT_ENV === 'dev' && appConfig.swaggerYmlFile && typeof appConfig.swaggerYmlFile === 'string') {
+  if (process.env.REUS_PROJECT_ENV === 'dev') {
     try {
       const projectDir = getProjectDir();
-      const yamlInfos = yamljs.load(path.isAbsolute(appConfig.swaggerYmlFile) ? appConfig.swaggerYmlFile : path.join(projectDir, appConfig.swaggerYmlFile));
+      const swaggerOptions = {};
+      if (appConfig.swaggerOptions) {
+        Object.assign(swaggerOptions, { ...appConfig.swaggerOptions });
+      } else if (appConfig.swaggerYmlFile) {
+        Object.assign(swaggerOptions, {
+          sepc: yamljs.load(path.isAbsolute(appConfig.swaggerYmlFile) ? appConfig.swaggerYmlFile : path.join(projectDir, appConfig.swaggerYmlFile)),
+        });
+      }
       app.use(
         koaSwagger({
-          routePrefix: '/swagger/index.html',
+          routePrefix: appConfig.swaggerRoutePrefix || '/swagger/index.html',
           swaggerCdnUrl: appConfig.swaggerCdnUrl,
-          swaggerOptions: {
-            spec: yamlInfos,
-          },
+          swaggerOptions,
         }),
       );
     } catch (e) {
