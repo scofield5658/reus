@@ -1,8 +1,7 @@
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { createRequire } from 'module';
+import { fileURLToPath, pathToFileURL } from 'url';
 import child_process from 'child_process';
 
 import program from 'commander';
@@ -11,13 +10,12 @@ import log from 'fancy-log';
 import MODES from '../constants/mode.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const require = createRequire(import.meta.url);
 
 program
   .command('launch <entry>')
   .description('launch app in specific mode')
   .option('-m, --mode [value]', 'mode, eg. dev/prod, use dev by default')
-  .action(function (entry, options) {
+  .action(async function (entry, options) {
     const project_dir = path.isAbsolute(entry) ? entry : path.resolve(process.cwd(), entry);
     process.env.REUS_PROJECT_DIR = project_dir;
     process.env.REUS_PROJECT_ENV = MODES.includes(options.mode) ? options.mode : 'prod';
@@ -49,9 +47,9 @@ program
         console.error(chunk.toString());
       });
     } else {
-      const appEntry = `${path.resolve(__dirname, '..', 'bin', 'app.js')}`;
+      const appEntry = path.resolve(__dirname, '..', 'bin', 'app.js');
       if (fs.existsSync(appEntry)) {
-        require(appEntry);
+        await import(pathToFileURL(appEntry).href);
       } else {
         throw new Error('Reus Entry Is Broken ...');
       }
