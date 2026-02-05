@@ -51,7 +51,7 @@ gulp.task('copy', function () {
     .pipe(babel({
       presets: [
         ['@babel/preset-env', {
-          modules: 'commonjs',
+          modules: false,
           targets: { node: 'current' },
         }],
       ],
