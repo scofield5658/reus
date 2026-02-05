@@ -1,31 +1,35 @@
-const path = require('path');
-const { koaSwagger } = require('koa2-swagger-ui');
-const yamljs = require('yamljs');
+import path from 'path';
+import { createRequire } from 'module';
 
-const { getProjectDir, getProjectConfig, getAppConfig, getPlugins, getPlugin } = require('../common');
-const { registerMiddleware, registerRoutes, registerProxies } = require('./utils');
-const staticHandler = require('./modules/static');
-const httpHelper = require('./helpers/http');
-const jsonHelper = require('./helpers/json');
+import { koaSwagger } from 'koa2-swagger-ui';
+import yamljs from 'yamljs';
+import Koa from 'koa';
+import { koaBody } from 'koa-body';
 
-const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { config: v.params }));
+import { getProjectDir, getProjectConfig, getAppConfig, getPlugins, getPlugin } from '../common.js';
+
+import { registerMiddleware, registerRoutes, registerProxies } from './utils.js';
+import staticHandler from './modules/static/index.js';
+import httpHelper from './helpers/http.js';
+import jsonHelper from './helpers/json.js';
+
+const require = createRequire(import.meta.url);
+
+const plugins = getPlugins().map((v) => Object.assign({}, getPlugin(v.name), { config: v.params }));
 
 (async () => {
   const projectConfig = getProjectConfig();
-  const appConfig = getAppConfig();
+  const appConfig = await getAppConfig();
   if (appConfig.startups && Array.isArray(appConfig.startups)) {
-    await (function() {
+    await (function () {
       return appConfig.startups.reduce((prev, startup) => {
         if (typeof startup === 'function') {
           return prev.then(() => startup());
         }
-        return prev.then(() => resolve());
+        return prev.then(() => Promise.resolve());
       }, Promise.resolve());
     })();
   }
-
-  const Koa = require('koa');
-  const KoaBody = require('koa-body').default;
 
   const UPLOAD_CONFIG = {
     encoding: 'utf-8',
@@ -88,7 +92,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
     app.use(proxies.routes(), proxies.allowedMethods());
   }
 
-  app.use(KoaBody(UPLOAD_CONFIG));
+  app.use(koaBody(UPLOAD_CONFIG));
   app.use(jsonHelper);
   app.use(httpHelper);
 
@@ -111,7 +115,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
         app.use(staticHandler(pluginConfig));
         handleRender = plugin.render(projectDir, pluginConfig);
         renderConfig = pluginConfig;
-        app.use(function(ctx, next) {
+        app.use(function (ctx, next) {
           ctx.render = handleRender;
           return next();
         });
@@ -130,7 +134,7 @@ const plugins = getPlugins().map(v => Object.assign({}, getPlugin(v.name), { con
     app.use(router.routes(), router.allowedMethods());
   }
 
-  console.log(`server started at: ${(new Date)}`);
+  console.log(`server started at: ${new Date()}`);
   console.log(`server port: ${projectConfig.app.port}`);
   app.listen(projectConfig.app.port);
 })();

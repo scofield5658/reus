@@ -1,1 +1,1 @@
-module.exports = require('./src/models');
+export { SuccessResponse, FailResponse, Controller, Middleware } from './src/models/index.js';

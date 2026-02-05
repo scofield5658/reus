@@ -2,7 +2,7 @@
  * Module dependencies.
  */
 
-const { RateLimiterMongo: MongoLimiter, RateLimiterMemory: MemoryLimiter } = require('rate-limiter-flexible');
+import { RateLimiterMongo as MongoLimiter, RateLimiterMemory as MemoryLimiter } from 'rate-limiter-flexible';
 
 /**
  * Initialize ratelimit middleware with the given `opts`:
@@ -61,7 +61,7 @@ function ratelimit(opts = { type: 'memory' }) {
         'Retry-After': item2.msBeforeNext / 1000,
         'X-RateLimit-Limit': opts.max,
         'X-RateLimit-Remaining': item2.remainingPoints,
-        'X-RateLimit-Reset': new Date(Date.now() + item2.msBeforeNext)
+        'X-RateLimit-Reset': new Date(Date.now() + item2.msBeforeNext),
       };
       ctx.set(headers);
       return await next();
@@ -71,7 +71,7 @@ function ratelimit(opts = { type: 'memory' }) {
           'Retry-After': error.msBeforeNext / 1000,
           'X-RateLimit-Limit': opts.max,
           'X-RateLimit-Remaining': error.remainingPoints,
-          'X-RateLimit-Reset': new Date(timestamp + error.msBeforeNext)
+          'X-RateLimit-Reset': new Date(timestamp + error.msBeforeNext),
         };
         ctx.set(headers);
         ctx.status = 429;
@@ -87,4 +87,4 @@ function ratelimit(opts = { type: 'memory' }) {
  * Expose `ratelimit()`.
  */
 
-module.exports = ratelimit;
+export default ratelimit;

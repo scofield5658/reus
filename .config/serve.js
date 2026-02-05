@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   port: 3001,
   ui_port: 10000,
   reloadDelay: 300,
