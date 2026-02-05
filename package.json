@@ -1,42 +1,29 @@
 {
   "name": "reus.js",
-  "version": "4.1.1",
+  "version": "5.0.3",
   "description": "cli for webapp development & deployment by nodejs",
+  "type": "module",
   "main": "./index.js",
   "typings": "types/index.d.ts",
-  "bin": {
-    "reus": "./bin/shell.js"
-  },
+  "bin": { "reus": "./bin/shell.js" },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "declaration": "tsc"
+    "lint": "eslint --fix --ext .js src/"
   },
   "author": "guoz5658 <guoz5658@outlook.com>",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/scofield5658/reus"
-  },
-  "keywords": [
-    "cli",
-    "koa framework",
-    "webapp"
-  ],
+  "repository": { "type": "git", "url": "https://github.com/scofield5658/reus" },
+  "keywords": ["cli", "koa framework", "webapp"],
   "dependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
     "@types/koa": "^2.13.5",
-    "babel-core": "6.26.3",
-    "babel-eslint": "10.1.0",
-    "babel-plugin-syntax-dynamic-import": "6.18.0",
-    "babel-plugin-transform-object-rest-spread": "6.26.0",
-    "babel-plugin-transform-runtime": "6.23.0",
-    "babel-preset-env": "1.7.0",
     "browser-sync": "2.26.14",
     "colors": "1.4.0",
     "commander": "2.20.3",
     "del": "4.1.1",
     "fancy-log": "1.3.3",
-    "gulp": "4.0.2",
-    "gulp-babel": "7.0.1",
+    "gulp": "5.0.1",
+    "gulp-babel": "^8.0.0",
     "gulp-clean": "0.4.0",
     "gulp-nodemon": "2.5.0",
     "http-proxy-middleware": "1.3.1",
@@ -56,12 +43,12 @@
     "yamljs": "0.3.0"
   },
   "devDependencies": {
-    "eslint": "6.8.0",
-    "eslint-plugin-testcafe": "0.2.1",
-    "testcafe": "1.12.0",
-    "typescript": "4.1.3"
+    "@babel/eslint-parser": "^7.25.0",
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "eslint-plugin-import": "2.32.0"
   },
-  "engines": {
-    "node": ">=8.9.0"
-  }
+  "engines": { "node": ">=18" },
+  "volta": { "node": "18.20.7", "npm": "8.19.4", "pnpm": "10.12.4" },
+  "packageManager": "pnpm@10.12.4"
 }

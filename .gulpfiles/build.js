@@ -1,13 +1,18 @@
-const path = require('path');
-const gulp = require('gulp');
-const babel = require('gulp-babel');
-const { getProjectDir, getPlugins, getPlugin } = require('../common');
+import path from 'path';
+import { createRequire } from 'module';
+
+import gulp from 'gulp';
+import babel from 'gulp-babel';
+
+import { getProjectDir, getPlugins, getPlugin } from '../common.js';
+
+const require = createRequire(import.meta.url);
 
 const reservedTaskName = ['copy', 'build', 'serve', 'clean:dist', 'clean:tmp'];
 const sequences = [
   'clean:dist',
   'clean:tmp',
-  'copy'
+  'copy',
 ];
 
 const plugins = getPlugins();
@@ -16,7 +21,7 @@ if (plugins.length) {
   for (let index = plugins.length - 1; index > 0; index -= 1) {
     const pluginName = plugins[index].name;
     if (!pluginName || reservedTaskName.indexOf(pluginName) > -1) {
-      throw 'invalid plugin name'
+      throw 'invalid plugin name';
     }
     const handler = getPlugin(pluginName);
     if (handler.mixins) {
@@ -29,32 +34,27 @@ if (plugins.length) {
   const buildHandler = handler.build;
   if (buildHandler && typeof buildHandler === 'function') {
     const params = plugins[0].params && require(path.join(getProjectDir(), plugins[0].params)) || {};
-    (function(handler) {
-      gulp.task(pluginName, function() {
+    (function (handler) {
+      gulp.task(pluginName, function () {
         return handler(getProjectDir(), params, mixins)(gulp);
-      })
-    })(buildHandler)
+      });
+    })(buildHandler);
     sequences.push(pluginName);
   }
 }
 
-gulp.task('copy', function() {
+gulp.task('copy', function () {
   return gulp.src([
     path.join(process.env.REUS_PROJECT_DIR, 'src', '**', '*'),
-    `!${path.join(process.env.REUS_PROJECT_DIR, 'src', 'pages', '**', 'node_modules', '**', '*')}`
+    `!${path.join(process.env.REUS_PROJECT_DIR, 'src', 'pages', '**', 'node_modules', '**', '*')}`,
   ])
     .pipe(babel({
       presets: [
-        ['env', {
+        ['@babel/preset-env', {
           modules: 'commonjs',
-          targets: { node: 'current' }
-        }]
+          targets: { node: 'current' },
+        }],
       ],
-      plugins: [
-        'syntax-dynamic-import',
-        'transform-object-rest-spread',
-        'transform-runtime'
-      ]
     }))
     .pipe(gulp.dest(process.env.REUS_PROJECT_OUTPUT));
 });

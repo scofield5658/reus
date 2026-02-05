@@ -1,3 +1,3 @@
-require('./.gulpfiles/clean');
-require('./.gulpfiles/serve');
-require('./.gulpfiles/build');
+import './.gulpfiles/clean.js';
+import './.gulpfiles/serve.js';
+import './.gulpfiles/build.js';

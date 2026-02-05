@@ -1,4 +1,5 @@
 const DEV_MODE = 'dev';
 const PROD_MODE = 'prod';
 
-module.exports = [DEV_MODE, PROD_MODE];
+export { DEV_MODE, PROD_MODE };
+export default [DEV_MODE, PROD_MODE];

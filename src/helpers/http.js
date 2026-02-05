@@ -1,4 +1,4 @@
-const rp = require('request-promise');
+import rp from 'request-promise';
 
 const http = async (opts) => {
   const response = await rp({
@@ -11,7 +11,7 @@ const http = async (opts) => {
   return { headers, data, status_code };
 };
 
-module.exports = function(ctx, next) {
+export default function (ctx, next) {
   ctx.http = http;
   return next();
-};
+}

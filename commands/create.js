@@ -1,28 +1,29 @@
-var path = require('path');
-var fs = require('fs');
-var program = require('commander');
-var log = require('fancy-log');
-var rp = require('request-promise');
-var unzipper = require('unzipper');
-var del = require('del');
+import path from 'path';
+import fs from 'fs';
 
-var mkdirs = function(dirname) {
-  var dirs = dirname.split(path.sep);
+import program from 'commander';
+import log from 'fancy-log';
+import rp from 'request-promise';
+import unzipper from 'unzipper';
+import del from 'del';
+
+const mkdirs = function (dirname) {
+  const dirs = dirname.split(path.sep);
   for (let i = 1, ii = dirs.length; i < ii; i++) {
-    var tmp = dirs.slice(0, i + 1).join(path.sep);
+    const tmp = dirs.slice(0, i + 1).join(path.sep);
     if (!fs.existsSync(tmp)) {
       fs.mkdirSync(tmp);
     }
   }
 };
 
-var writeFileSync = function(filepath, buffer) {
+const writeFileSync = function (filepath, buffer) {
   mkdirs(path.dirname(filepath));
   fs.writeFileSync(filepath, buffer);
   return filepath;
 };
 
-var unzip = function(originfile, filepath) {
+const unzip = function (originfile, filepath) {
   fs.createReadStream(originfile)
     .pipe(unzipper.Extract({ path: filepath }))
     .promise()
@@ -39,9 +40,9 @@ program
   .description('create app by specific template in current directory')
   .option('-t, --template [value]', 'template, eg. simple, used by default')
   .action(function (options) {
-    var project_dir = path.join(process.cwd());
-    var template_name = `${options.template || 'simple'}`;
-    var template_uri = `https://github.com/scofield5658/reus-${template_name}-starter/archive/master.zip`;
+    const project_dir = path.join(process.cwd());
+    const template_name = `${options.template || 'simple'}`;
+    const template_uri = `https://github.com/scofield5658/reus-${template_name}-starter/archive/master.zip`;
 
     log.info(`========== Current Dir: ${project_dir} ==========`);
     log.info(`========== Template: ${template_uri} ==========`);
@@ -52,8 +53,8 @@ program
       resolveWithFullResponse: true,
       simple: false,
       encoding: null,
-    }).then(response => {
-      var downloadfile = path.join(project_dir, 'tmp.zip');
+    }).then((response) => {
+      const downloadfile = path.join(project_dir, 'tmp.zip');
       writeFileSync(downloadfile, response.body);
       unzip(downloadfile, project_dir);
     });

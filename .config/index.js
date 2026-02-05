@@ -1,8 +1,8 @@
-var app = require('./app');
-var browserSync = require('./serve');
-var upload = require('./upload');
+import app from './app.js';
+import browserSync from './serve.js';
+import upload from './upload.js';
 
-module.exports = {
+export default {
   app,
   browserSync,
   upload,

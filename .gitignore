@@ -64,4 +64,16 @@ logs/
 types/
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
 .DS_Store
+
+.vscode/
+.cursor/
+.claude/
+.lingma/
+.codebuddy/
+.trae/
+.qoder/
+.idea/
+.specify/
+specs/

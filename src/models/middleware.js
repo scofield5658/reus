@@ -1,13 +1,11 @@
-const Koa = require('koa');
-
-class Middleware {
+export default class Middleware {
   /**
-  * @constructor Middleware
-  * @description If you want to override it, please call super(ctx, next) first.
-  * @param {Koa.Context} ctx koa.context
-  * @param {Koa.Next} next koa.next
-  * @param {Koa<Koa.DefaultState, Koa.DefaultContext>} app koa.app
-  */
+   * @constructor Middleware
+   * @description If you want to override it, please call super(ctx, next) first.
+   * @param {Koa.Context} ctx koa.context
+   * @param {Koa.Next} next koa.next
+   * @param {Koa<Koa.DefaultState, Koa.DefaultContext>} app koa.app
+   */
   constructor(ctx, next, app) {
     this.ctx = ctx;
     this.next = next;
@@ -19,5 +17,3 @@ class Middleware {
     return next();
   }
 }
-
-module.exports = Middleware;

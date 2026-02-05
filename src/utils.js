@@ -1,15 +1,18 @@
-const Router = require('koa-router');
-const Compose = require('koa-compose');
-const c2k = require('koa-connect');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const log = require('fancy-log');
-const { renderStatic } = require('../common');
-const ratelimit = require('./modules/ratelimit');
-const { FailResponse, Controller, Middleware } = require('./models');
+import Router from 'koa-router';
+import Compose from 'koa-compose';
+import c2k from 'koa-connect';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import log from 'fancy-log';
+
+import { renderStatic } from '../common.js';
+
+import ratelimit from './modules/ratelimit/index.js';
+import { FailResponse, Controller, Middleware } from './models/index.js';
 
 const tgtURL = (url, config = {}) => {
-  const tgtBase = (process.env.REUS_PROJECT_ENV && process.env.REUS_PROJECT_ENV !== 'dev') ?
-    config.cdnUrl : config.baseUrl;
+  const tgtBase = (process.env.REUS_PROJECT_ENV && process.env.REUS_PROJECT_ENV !== 'dev')
+    ? config.cdnUrl
+    : config.baseUrl;
   return (`${tgtBase || ''}${url.replace(/\\/gmi, '/').replace(/^\/pages/, '')}`).replace(/\\/gmi, '/');
 };
 
@@ -43,7 +46,7 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
     max = 12,
     duration = 60,
     validate,
-    errmsg = '请求过于频繁，请稍后再试'
+    errmsg = '请求过于频繁，请稍后再试',
   }) => ({
     type,
     tableName: table_name,
@@ -51,7 +54,7 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
     max,
     duration,
     errorMessage: () => new FailResponse(-1, errmsg),
-    id: validate || function(ctx){ return ctx.ip; },
+    id: validate || function (ctx) { return ctx.ip; },
   });
 
   const iterator = (parent, route) => {
@@ -82,7 +85,7 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
       router[route.method](
         tgtURL(routepath, routeConfig),
         Compose(middlewares),
-        action
+        action,
       );
     } else if (route.view) {
       let payload = { title: route.title || 'reus.title' };
@@ -92,7 +95,7 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
         payload = Object.assign(payload, route.preload);
       }
 
-      router.get(tgtURL(routepath, routeConfig), Compose(middlewares), function(ctx) {
+      router.get(tgtURL(routepath, routeConfig), Compose(middlewares), function (ctx) {
         if (route.view.indexOf('html') > -1) {
           return renderStatic(ctx, route.view);
         }
@@ -134,11 +137,11 @@ const registerProxies = (routes = [], routeConfig = {}) => {
         logLevel: route.loglevel || 'warn',
         onError: function (err, req, res) {
           res.writeHead(502, {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           });
           res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
-        }
-      })
+        },
+      });
       router[route.method](tgtURL(routepath, routeConfig), Compose(middlewares), c2k(proxyServer));
     }
   };
@@ -150,7 +153,7 @@ const registerProxies = (routes = [], routeConfig = {}) => {
   return router;
 };
 
-module.exports = {
+export {
   registerMiddleware,
   registerController,
   registerRoutes,

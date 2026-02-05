@@ -7,7 +7,7 @@
 
 [npm-image]: https://img.shields.io/npm/v/reus.js.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/reus.js
-[node-image]: https://img.shields.io/badge/node.js-%3E=_8.9.0-green.svg?style=flat-square
+[node-image]: https://img.shields.io/badge/node.js-%3E=_18-green.svg?style=flat-square
 [node-url]: http://nodejs.org/download/
 [download-image]: https://img.shields.io/npm/dm/reus.js.svg?style=flat-square
 [download-url]: https://npmjs.org/package/reus.js
@@ -31,7 +31,7 @@ Reus.js has the core consideration for enterprise situation. Dealing with multip
 $ npm install -g reus.js
 ```
 
-Node.js >= 8.9.0 required. (I do not test it in any node environment lower than that version. Someone may have a nice try O(∩_∩)O~~)
+Node.js 18+ required. For ESM examples below, add `"type": "module"` to your project's `package.json`.
 
 ## Features
 
@@ -45,35 +45,32 @@ Node.js >= 8.9.0 required. (I do not test it in any node environment lower than 
   ```bash
   $ reus create -t simple
   $ cd reus-simple-starter
-  $ npm i
+  $ pnpm i
   ```
 
 - Create a Controller
   ```javascript
-  const { Controller } = require('reus.js');
+  import { Controller } from 'reus.js';
 
-  class HelloController extends Controller {
+  export default class HelloController extends Controller {
     async index() {
       const { ctx } = this;
       ctx.json({ data: 'hello from HelloController' });
     }
   }
-
-  module.exports = HelloController;
   ```
+
 - Create a Middleware
   ```javascript
-  const { Middleware } = require('reus.js');
+  import { Middleware } from 'reus.js';
 
-  class LogMiddleware extends Middleware {
+  export default class LogMiddleware extends Middleware {
     async index() {
       const { ctx, next } = this;
       console.log(`[${new Date()}]${ctx.url}:${ctx.method}`);
       return next();
     }
   }
-
-  module.exports = LogMiddleware;
   ```
 
 - Build-in Methods
@@ -93,25 +90,27 @@ Node.js >= 8.9.0 required. (I do not test it in any node environment lower than 
     ```
   2. ```src/routers.js```
     ```javascript
-    module.exports = [
+    import HelloController from './controllers/hello.js';
+
+    export default [
       {
         path: '/hello',
         method: 'get',
-        controller: require('../controllers/hello')
-      }
+        controller: HelloController,
+      },
     ];
     ```
+
   3. ```src/app.config.js```
-
     ```javascript
-    const logger = require('./middlewares/logger');
-    const routers = require('./routers');
+    import logger from './middlewares/logger.js';
+    import routers from './routers.js';
 
-    module.exports = {
+    export default {
       routers,
       middlewares: [logger],
-      swaggerYmlFile: "some-path-to-swagger-yaml-file",
-      swaggerCdnUrl: "custom-swagger-cdnurl"
+      swaggerYmlFile: 'some-path-to-swagger-yaml-file',
+      swaggerCdnUrl: 'custom-swagger-cdnurl',
     };
     ```
 
