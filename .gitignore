@@ -63,7 +63,6 @@ dist/
 logs/
 package-lock.json
 yarn.lock
-pnpm-lock.yaml
 .DS_Store
 
 .vscode/
@@ -76,3 +75,4 @@ pnpm-lock.yaml
 .idea/
 .specify/
 specs/
+docs/
