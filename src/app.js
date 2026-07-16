@@ -33,6 +33,8 @@ const plugins = getPlugins().map((v) => Object.assign({}, getPlugin(v.name), { c
 
   const UPLOAD_CONFIG = {
     encoding: 'utf-8',
+    jsonLimit: projectConfig.upload.json_limit,
+    formLimit: projectConfig.upload.form_limit,
     multipart: true,
     formidable: {
       multipart: false,
