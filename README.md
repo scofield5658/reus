@@ -1,135 +1,144 @@
-# reus
+# reus.js
 
-[![NPM version][npm-image]][npm-url]
-[![node version][node-image]][node-url]
-[![npm download][download-image]][download-url]
-[![npm license][license-image]][download-url]
+reus.js 是面向 Koa 2 应用的轻量二次封装。它统一项目配置、启动任务、请求体解析、Controller/Middleware、路由、代理、Swagger、开发进程和构建流程，让使用方聚焦业务代码。
 
-[npm-image]: https://img.shields.io/npm/v/reus.js.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/reus.js
-[node-image]: https://img.shields.io/badge/node.js-%3E=_18-green.svg?style=flat-square
-[node-url]: http://nodejs.org/download/
-[download-image]: https://img.shields.io/npm/dm/reus.js.svg?style=flat-square
-[download-url]: https://npmjs.org/package/reus.js
-[license-image]: https://img.shields.io/npm/l/reus.js.svg
+## 环境与安装
 
-> cli for webapp development &amp; deployment by nodejs
-
-![REUS LOGO](./reus.png)
-
-## What is it
-
-Reus.js is a webapp framework based on koa.js, which utilizes a useful consequence of the encapsulation principle. Developers are easily focused on implementations for production/business requirements, rather than the versions of dependencies or the scaffold a team project required.
-
-## Why should I use it
-
-Reus.js has the core consideration for enterprise situation. Dealing with multiple projects, an R&D manager usually needs a widely covered version control, such as scaffolds controlls, third party libraries/dependencies controlls, etc.. This problem can be solved by one simple step, add reus.js into the dependency list. It provides a whole lifecycle coverage for the project's development & deployment.
-
-## Installation
+- Node.js 18+
+- Koa 2
+- 项目使用 ESM（`package.json` 中设置 `"type": "module"`）
 
 ```bash
-$ npm install -g reus.js
+pnpm add reus.js
 ```
 
-Node.js 18+ required. For ESM examples below, add `"type": "module"` to your project's `package.json`.
+## CLI
 
-## Features
+```bash
+# 从 starter 创建项目
+reus create -t simple
 
-- Commands for Create/Launch/Build Your Project
-- Process Management for Launch in DevMode
-- Gulp Based Plugin Development
+# 开发模式：默认只启动 nodemon
+reus launch . --mode dev
 
-## Getting Started
+# 构建 src 到 dist
+reus build .
 
-- Initialization
-  ```bash
-  $ reus create -t simple
-  $ cd reus-simple-starter
-  $ pnpm i
-  ```
+# 生产模式（launch 的默认模式）
+reus launch .
+```
 
-- Create a Controller
-  ```javascript
-  import { Controller } from 'reus.js';
+命令的子进程失败会返回非零退出码。`create` 会校验下载状态、等待解压完成，并在成功或失败后清理临时文件。
 
-  export default class HelloController extends Controller {
-    async index() {
-      const { ctx } = this;
-      ctx.json({ data: 'hello from HelloController' });
-    }
+## 最小项目
+
+`project.config.json`：
+
+```json
+{
+  "app": {
+    "port": 8090
+  },
+  "browserSync": {
+    "enabled": false
   }
-  ```
+}
+```
 
-- Create a Middleware
-  ```javascript
-  import { Middleware } from 'reus.js';
+`src/app.config.js`：
 
-  export default class LogMiddleware extends Middleware {
-    async index() {
-      const { ctx, next } = this;
-      console.log(`[${new Date()}]${ctx.url}:${ctx.method}`);
-      return next();
-    }
+```js
+import routers from './routers.js';
+import RequestLog from './middlewares/request-log.js';
+
+export default {
+  startups: [
+    async () => {
+      // 在 Koa 创建和 listen 之前顺序执行
+    },
+  ],
+  middlewares: [RequestLog],
+  routers,
+  swaggerYmlFile: './swagger.yml',
+};
+```
+
+`src/routers.js`：
+
+```js
+import HelloController from './controllers/hello.js';
+
+export default [
+  {
+    path: '/hello',
+    method: 'get',
+    controller: HelloController,
+  },
+];
+```
+
+Controller 与 Middleware：
+
+```js
+import { Controller, Middleware } from 'reus.js';
+
+export class HelloController extends Controller {
+  async index() {
+    this.ctx.json({ message: 'hello' });
   }
-  ```
+}
 
-- Build-in Methods
+export class RequestLog extends Middleware {
+  async index() {
+    console.log(this.ctx.method, this.ctx.url);
+    return this.next();
+  }
+}
+```
 
-  1. ```ctx.json```: Stringify your response
-  2. ```ctx.http```: Send a request with [request](https://github.com/request/request)
+## 上下文 helper
 
-- How to run
+`ctx.json(value)` 将响应设置为 JSON。
 
-  1. ```project.config.json```
-    ```json
-      {
-        "app": {
-          "port": 5658
-        }
-      }
-    ```
-  2. ```src/routers.js```
-    ```javascript
-    import HelloController from './controllers/hello.js';
+`ctx.http(options)` 基于 Node 原生 `fetch`，支持 `uri/url`、`qs`、`method`、`headers`、`body`、`json`、显式 `timeout` 和 `encoding: null`：
 
-    export default [
-      {
-        path: '/hello',
-        method: 'get',
-        controller: HelloController,
-      },
-    ];
-    ```
+```js
+const response = await ctx.http({
+  uri: 'http://127.0.0.1:8080/orders',
+  method: 'POST',
+  body: { side: 'BUY' },
+});
 
-  3. ```src/app.config.js```
-    ```javascript
-    import logger from './middlewares/logger.js';
-    import routers from './routers.js';
+// response: { headers, data, status_code }
+```
 
-    export default {
-      routers,
-      middlewares: [logger],
-      swaggerYmlFile: 'some-path-to-swagger-yaml-file',
-      swaggerCdnUrl: 'custom-swagger-cdnurl',
-    };
-    ```
+HTTP 4xx/5xx 会 resolve；网络错误和显式超时会 reject。框架不设置默认超时。
 
-  4. Run Dev Mode
+## 路由协议
 
-    ```bash
-    $ reus launch . --mode dev
-    ```
+路由始终启用 `allowedMethods`：
 
-- How to build
+- method 不匹配返回 405 与 `Allow`；
+- OPTIONS 自动响应；
+- 不支持的方法可能返回 501；
+- 未知路径保持 404。
 
-  ```bash
-  $ reus build .
-  ```
+正确 method/path 的 Controller 请求不受影响。
 
-- How to deploy
-  ```bash
-  $ reus launch .
-  ```
+## BrowserSync
+
+BrowserSync 与 nodemon 是两个独立工具。默认只启动 nodemon；仅当下面的配置显式开启时，BrowserSync 才并行启动，并代理真实的 `app.port`：
+
+```json
+{
+  "browserSync": {
+    "enabled": true,
+    "port": 3001,
+    "ui_port": 10000,
+    "files": ["src/pages/**/*"]
+  }
+}
+```
 
 ## License
 

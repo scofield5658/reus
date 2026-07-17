@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": "../..",
+    "paths": {
+      "reus.js": ["types/index.d.ts"]
+    }
+  },
+  "include": ["fixture.ts"]
+}

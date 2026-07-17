@@ -54,14 +54,11 @@ const plugins = getPlugins().map((v) => Object.assign({}, getPlugin(v.name), { c
   if (process.env.REUS_PROJECT_ENV === 'dev' || appConfig.swaggerSwitch) {
     try {
       const projectDir = getProjectDir();
-      const swaggerOptions = {};
-      if (appConfig.swaggerOptions) {
-        Object.assign(swaggerOptions, { ...appConfig.swaggerOptions });
-        if (appConfig.swaggerYmlFile) {
-          Object.assign(swaggerOptions, {
-            sepc: yamljs.load(path.isAbsolute(appConfig.swaggerYmlFile) ? appConfig.swaggerYmlFile : path.join(projectDir, appConfig.swaggerYmlFile)),
-          });
-        }
+      const swaggerOptions = { ...appConfig.swaggerOptions };
+      if (!swaggerOptions.url && !swaggerOptions.spec && appConfig.swaggerYmlFile) {
+        Object.assign(swaggerOptions, {
+          spec: yamljs.load(path.isAbsolute(appConfig.swaggerYmlFile) ? appConfig.swaggerYmlFile : path.join(projectDir, appConfig.swaggerYmlFile)),
+        });
       }
       app.use(
         koaSwagger({
@@ -84,14 +81,14 @@ const plugins = getPlugins().map((v) => Object.assign({}, getPlugin(v.name), { c
   }
 
   // proxy routers
+  let proxies;
   if (appConfig.routers) {
-    let proxies;
     if (typeof appConfig.routers === 'function') {
       proxies = registerProxies(await appConfig.routers(), {});
     } else if (Array.isArray(appConfig.routers)) {
       proxies = registerProxies(appConfig.routers, {});
     }
-    app.use(proxies.routes(), proxies.allowedMethods());
+    app.use(proxies.routes());
   }
 
   app.use(koaBody(UPLOAD_CONFIG));
@@ -126,14 +123,21 @@ const plugins = getPlugins().map((v) => Object.assign({}, getPlugin(v.name), { c
   }
 
   // normal routers
+  let router;
   if (appConfig.routers) {
-    let router;
     if (typeof appConfig.routers === 'function') {
       router = registerRoutes(await appConfig.routers(), renderConfig);
     } else if (Array.isArray(appConfig.routers)) {
       router = registerRoutes(appConfig.routers, renderConfig);
     }
-    app.use(router.routes(), router.allowedMethods());
+    app.use(router.routes());
+  }
+
+  if (proxies) {
+    app.use(proxies.allowedMethods());
+  }
+  if (router) {
+    app.use(router.allowedMethods());
   }
 
   console.log(`server started at: ${new Date()}`);
