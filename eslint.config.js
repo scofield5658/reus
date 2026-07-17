@@ -5,20 +5,15 @@ import importPlugin from 'eslint-plugin-import';
 export default [
   {
     ignores: [
-      '**',
-      '!bin/**',
-      '!commands/**',
-      '!src/**',
-      '!.config/**',
-      '!.gulpfiles/**',
-      '!common.js',
-      '!command.js',
-      '!gulpfile.js',
-      '!index.js',
+      'node_modules/**',
+      'dist/**',
+      'consumer-validation/**',
+      'artifacts/**',
     ],
   },
   js.configs.recommended,
   {
+    files: ['**/*.js', '**/*.mjs'],
     plugins: {
       import: importPlugin,
     },
@@ -46,6 +41,9 @@ export default [
         exports: 'readonly',
         Buffer: 'readonly',
         global: 'readonly',
+        AbortSignal: 'readonly',
+        URLSearchParams: 'readonly',
+        fetch: 'readonly',
         // jest
         describe: 'readonly',
         it: 'readonly',

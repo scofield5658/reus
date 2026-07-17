@@ -9,12 +9,14 @@ import log from 'fancy-log';
 
 import MODES from '../constants/mode.js';
 
+import { setFailureExitCode, waitForChild } from './process.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 program
   .command('launch <entry>')
   .description('launch app in specific mode')
-  .option('-m, --mode [value]', 'mode, eg. dev/prod, use dev by default')
+  .option('-m, --mode [value]', 'mode, eg. dev/prod, use prod by default')
   .action(async function (entry, options) {
     const project_dir = path.isAbsolute(entry) ? entry : path.resolve(process.cwd(), entry);
     process.env.REUS_PROJECT_DIR = project_dir;
@@ -39,13 +41,11 @@ program
         }
       }
 
-      bootstrap.stdout.on('data', function (chunk) {
-        console.info(chunk.toString());
-      });
-
-      bootstrap.stderr.on('data', function (chunk) {
-        console.error(chunk.toString());
-      });
+      try {
+        await waitForChild(bootstrap);
+      } catch (error) {
+        setFailureExitCode(error);
+      }
     } else {
       const appEntry = path.resolve(__dirname, '..', 'bin', 'app.js');
       if (fs.existsSync(appEntry)) {

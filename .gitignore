@@ -60,6 +60,8 @@ typings/
 # temporary directories
 .tmp/
 dist/
+artifacts/
+consumer-validation/
 logs/
 package-lock.json
 yarn.lock

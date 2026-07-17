@@ -7,12 +7,14 @@ import child_process from 'child_process';
 import program from 'commander';
 import log from 'fancy-log';
 
+import { setFailureExitCode, waitForChild } from './process.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 program
   .command('build <entry>')
   .description('build app in specific mode')
-  .action(function (entry) {
+  .action(async function (entry) {
     const project_dir = path.isAbsolute(entry) ? entry : path.resolve(process.cwd(), entry);
     const output_dir = path.resolve(project_dir, 'dist');
     process.env.REUS_PROJECT_ENV = 'prod';
@@ -37,13 +39,11 @@ program
       }
     }
 
-    bootstrap.stdout.on('data', function (chunk) {
-      console.info(chunk.toString());
-    });
-
-    bootstrap.stderr.on('data', function (chunk) {
-      console.error(chunk.toString());
-    });
+    try {
+      await waitForChild(bootstrap);
+    } catch (error) {
+      setFailureExitCode(error);
+    }
   });
 
 program.parse(process.argv);

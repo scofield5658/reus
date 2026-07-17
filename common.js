@@ -16,7 +16,13 @@ export function getProjectConfig() {
   const ext_config = fs.existsSync(path.join(projectDir, 'project.config.json'))
     ? require(path.join(projectDir, 'project.config.json'))
     : {};
-  return Object.assign({}, defaultConfig, ext_config);
+  const config = Object.assign({}, defaultConfig, ext_config);
+  config.browserSync = Object.assign(
+    {},
+    defaultConfig.browserSync,
+    ext_config.browserSync,
+  );
+  return config;
 }
 
 export async function getAppConfig() {
