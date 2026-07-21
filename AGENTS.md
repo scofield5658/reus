@@ -2,22 +2,25 @@
 
 ## 项目定位
 
-reus.js 是基于 Koa 2 的应用框架和 CLI。它通过约定式配置、Controller、Middleware、路由描述和构建命令，减少使用方直接组装 Koa 应用的工作量。
+reus.js 是基于 Koa 3 的应用框架和 CLI。它通过约定式配置、Controller、Middleware、路由描述和构建命令，减少使用方直接组装 Koa 应用的工作量。
 
-当前版本面向 Node.js 18 及以上环境，包本身使用 ES Module。运行时只公开导出 `Controller` 和 `Middleware`；项目配置、路由及上下文辅助方法的类型定义位于 `types/index.d.ts`。
+当前版本面向 Node.js 22.22.0 及以上环境，包本身使用 ES Module。运行时只公开导出 `Controller` 和 `Middleware`；项目配置、路由及上下文辅助方法的类型定义位于 `types/index.d.ts`。框架源码使用 TypeScript，发布前编译为 `dist/` 下的 JavaScript；纯声明文件由 `scripts/copy-types.mjs` 复制到 `dist/types/`。
 
 ## 目录和入口
 
-- `command.js`、`commands/`：`create`、`build`、`launch` 命令。
-- `bin/shell.js`：npm 安装后生成的 `reus` 命令入口。
-- `bin/app.js`：生产运行入口，可由 PM2 直接执行。
-- `src/app.js`：Koa 应用初始化和监听逻辑。
+- `src/index.ts`：包的公共运行时导出；npm `main` 指向其编译结果 `dist/src/index.js`。
+- `src/app.ts`：Koa 应用初始化和监听逻辑。
+- `src/common.ts`：读取使用方配置、插件和项目路径。
+- `src/utils.ts`：普通路由、代理路由和中间件注册。
+- `src/config/`：框架默认项目配置。
+- `src/cli/`：`create`、`build`、`launch` 命令及模式常量。
 - `src/models/`：Controller、Middleware 及响应模型。
 - `src/helpers/`：注入 `ctx.json` 和 `ctx.http`。
-- `src/utils.js`：普通路由、代理路由和中间件注册。
-- `.config/`：框架默认项目配置。
+- `src/modules/`：内置限流、静态资源等模块。
+- `types/index.d.ts`：公共类型及 Koa 上下文扩展；npm `types` 指向编译目录中的对应声明。
+- `bin/`：npm 安装后的 `reus` 命令和可由 PM2 直接执行的生产入口。
 - `.gulpfiles/`：使用方项目的构建和开发模式任务。
-- `common.js`：读取使用方配置、插件和项目路径。
+- `scripts/copy-types.mjs`：构建时将纯声明文件复制到 `dist/types/`。
 - `test/`：基于 `node:test` 的框架测试、类型测试和使用方验证脚本。
 
 ## 使用方项目

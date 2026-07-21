@@ -6,8 +6,8 @@ import path from 'node:path';
 import test from 'node:test';
 import { promisify } from 'node:util';
 
-import { createFromTemplate } from '../commands/create-core.js';
-import { spawnAndWait } from '../commands/process.js';
+import { createFromTemplate } from '../dist/src/cli/commands/create-core.js';
+import { spawnAndWait } from '../dist/src/cli/commands/process.js';
 
 import { createAppFixture, repositoryRoot } from './helpers/fixture.js';
 import { listen } from './helpers/server.js';
@@ -31,7 +31,7 @@ test('non-zero child exits are propagated', async () => {
 test('launch help documents prod as the default mode', async () => {
   const { stdout } = await execFileAsync(
     process.execPath,
-    ['command.js', 'launch', '--help'],
+    ['dist/src/cli/command.js', 'launch', '--help'],
     { cwd: repositoryRoot },
   );
 
@@ -85,7 +85,7 @@ test('build produces dist and exits successfully', async (t) => {
 
   await execFileAsync(
     process.execPath,
-    ['command.js', 'build', fixture.projectDir],
+    ['dist/src/cli/command.js', 'build', fixture.projectDir],
     { cwd: repositoryRoot },
   );
 
@@ -106,7 +106,7 @@ test('build CLI exits non-zero when the Gulp child fails', async (t) => {
   await assert.rejects(
     execFileAsync(
       process.execPath,
-      ['command.js', 'build', fixture.projectDir],
+      ['dist/src/cli/command.js', 'build', fixture.projectDir],
       { cwd: repositoryRoot },
     ),
     (error) => error.code !== 0,
@@ -123,7 +123,7 @@ test('dev launch CLI exits non-zero when the Gulp child fails', async (t) => {
   await assert.rejects(
     execFileAsync(
       process.execPath,
-      ['command.js', 'launch', fixture.projectDir, '--mode', 'dev'],
+      ['dist/src/cli/command.js', 'launch', fixture.projectDir, '--mode', 'dev'],
       { cwd: repositoryRoot, timeout: 10000 },
     ),
     (error) => error.code !== 0 && error.killed !== true,
@@ -134,12 +134,12 @@ test('launch keeps prod as the effective default mode', async (t) => {
   const fixture = await createAppFixture(t);
   await execFileAsync(
     process.execPath,
-    ['command.js', 'build', fixture.projectDir],
+    ['dist/src/cli/command.js', 'build', fixture.projectDir],
     { cwd: repositoryRoot },
   );
   const launched = spawn(
     process.execPath,
-    ['command.js', 'launch', fixture.projectDir],
+    ['dist/src/cli/command.js', 'launch', fixture.projectDir],
     {
       cwd: repositoryRoot,
       stdio: ['ignore', 'pipe', 'pipe'],

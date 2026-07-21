@@ -1,10 +1,13 @@
+import type { Context } from 'koa';
+
 export default class Controller {
+  ctx: Context;
   /**
    * @constructor Controller
    * @description If you want to override it, please call super(ctx) first.
    * @param {Koa.Context} ctx koa.context
    */
-  constructor(ctx) {
+  constructor(ctx: Context) {
     this.ctx = ctx;
   }
 

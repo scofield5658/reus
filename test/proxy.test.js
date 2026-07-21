@@ -4,7 +4,7 @@ import test from 'node:test';
 
 import Koa from 'koa';
 
-import { registerProxies } from '../src/utils.js';
+import { registerProxies } from '../dist/src/utils.js';
 
 import { listen } from './helpers/server.js';
 

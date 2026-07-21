@@ -1,3 +1,6 @@
+// Application and plugin configuration are intentionally dynamic at runtime.
+// @ts-nocheck
+
 import path from 'path';
 import { createRequire } from 'module';
 
@@ -6,8 +9,7 @@ import yamljs from 'yamljs';
 import Koa from 'koa';
 import { koaBody } from 'koa-body';
 
-import { getProjectDir, getProjectConfig, getAppConfig, getPlugins, getPlugin } from '../common.js';
-
+import { getProjectDir, getProjectConfig, getAppConfig, getPlugins, getPlugin } from './common.js';
 import { registerMiddleware, registerRoutes, registerProxies } from './utils.js';
 import staticHandler from './modules/static/index.js';
 import httpHelper from './helpers/http.js';

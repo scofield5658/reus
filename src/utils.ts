@@ -1,11 +1,13 @@
-import Router from 'koa-router';
+// Route descriptors support user-defined extensions and are validated at runtime.
+// @ts-nocheck
+
+import Router from '@koa/router';
 import Compose from 'koa-compose';
 import c2k from 'koa-connect';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import log from 'fancy-log';
 
-import { renderStatic } from '../common.js';
-
+import { renderStatic } from './common.js';
 import ratelimit from './modules/ratelimit/index.js';
 import { FailResponse, Controller, Middleware } from './models/index.js';
 
@@ -14,6 +16,24 @@ const tgtURL = (url, config = {}) => {
     ? config.cdnUrl
     : config.baseUrl;
   return (`${tgtBase || ''}${url.replace(/\\/gmi, '/').replace(/^\/pages/, '')}`).replace(/\\/gmi, '/');
+};
+
+const toRouterPath = (path) => (/[()[\]]/.test(path) ? new RegExp(`^${path}`) : path);
+
+const createProxyLogger = (loglevel = 'warn') => {
+  const noop = () => {};
+  const levels = ['debug', 'info', 'warn', 'error'];
+  const selectedLevel = levels.indexOf(loglevel.toLowerCase());
+
+  if (selectedLevel < 0) {
+    return { info: noop, warn: noop, error: noop };
+  }
+
+  return {
+    info: selectedLevel <= levels.indexOf('info') ? console.info.bind(console) : noop,
+    warn: selectedLevel <= levels.indexOf('warn') ? console.warn.bind(console) : noop,
+    error: selectedLevel <= levels.indexOf('error') ? console.error.bind(console) : noop,
+  };
 };
 
 const registerMiddleware = (middleware, app) => {
@@ -83,7 +103,7 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
     } else if (route.controller) {
       const action = registerController(route.controller);
       router[route.method](
-        tgtURL(routepath, routeConfig),
+        toRouterPath(tgtURL(routepath, routeConfig)),
         Compose(middlewares),
         action,
       );
@@ -95,7 +115,7 @@ const registerRoutes = (routes = [], routeConfig = {}) => {
         payload = Object.assign(payload, route.preload);
       }
 
-      router.get(tgtURL(routepath, routeConfig), Compose(middlewares), function (ctx) {
+      router.get(toRouterPath(tgtURL(routepath, routeConfig)), Compose(middlewares), function (ctx) {
         if (route.view.indexOf('html') > -1) {
           return renderStatic(ctx, route.view);
         }
@@ -127,22 +147,25 @@ const registerProxies = (routes = [], routeConfig = {}) => {
 
     const middlewares = (Array.isArray(route.middlewares) ? route.middlewares : []).map(registerMiddleware);
     if (route.proxyPattern) {
-      const proxyServer = createProxyMiddleware(route.proxyPattern, {
+      const proxyServer = createProxyMiddleware({
+        pathFilter: route.proxyPattern,
         target: route.target,
         changeOrigin: true,
         pathRewrite: route.pathRewrite,
         timeout: route.timeout || 120000,
         proxyTimeout: route.proxyTimeout || 120000,
         secure: false,
-        logLevel: route.loglevel || 'warn',
-        onError: function (err, req, res) {
-          res.writeHead(502, {
-            'Content-Type': 'application/json',
-          });
-          res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
+        logger: createProxyLogger(route.loglevel),
+        on: {
+          error: function (err, req, res) {
+            res.writeHead(502, {
+              'Content-Type': 'application/json',
+            });
+            res.end(JSON.stringify(new FailResponse(-1, 'service not available')));
+          },
         },
       });
-      router[route.method](tgtURL(routepath, routeConfig), Compose(middlewares), c2k(proxyServer));
+      router[route.method](toRouterPath(tgtURL(routepath, routeConfig)), Compose(middlewares), c2k(proxyServer));
     }
   };
 

@@ -17,6 +17,7 @@ const valueAfter = (flag) => {
 const consumer = valueAfter('--consumer');
 const requestedTarball = valueAfter('--tarball');
 const goatsRoot = process.env.GOATS_ROOT;
+const registry = process.env.PNPM_REGISTRY;
 assert.ok(goatsRoot, 'GOATS_ROOT is required');
 
 const consumers = {
@@ -27,7 +28,7 @@ const consumers = {
   },
   admin: {
     directory: 'uniweb-admin',
-    revision: '3d7f411a94dffc6a8b95770d79b7fff5fe9a010f',
+    revision: '3a7f4e0d563009f7661b1fc8bb59a50c5a3ab134',
     hasTests: false,
   },
 };
@@ -65,6 +66,10 @@ async function runLogged(filename, command, commandArgs, options = {}) {
   }
 }
 
+const withRegistry = (commandArgs) => (registry
+  ? [...commandArgs, `--registry=${registry}`]
+  : commandArgs);
+
 async function pack() {
   const packDir = path.join(tempRoot, 'pack');
   await fs.mkdir(packDir);
@@ -83,6 +88,19 @@ async function sourceState() {
   return { head, status };
 }
 
+async function sourceLockfilePath() {
+  for (const candidate of ['pnpm-lock.yaml', 'docker/pnpm-lock.yaml']) {
+    const lockfile = path.join(sourceDir, candidate);
+    try {
+      await fs.access(lockfile);
+      return lockfile;
+    } catch {
+      // Try the next supported lockfile location.
+    }
+  }
+  throw new Error(`${consumer} source pnpm lockfile is missing`);
+}
+
 await fs.rm(evidenceDir, { recursive: true, force: true });
 await fs.mkdir(evidenceDir, { recursive: true });
 const before = await sourceState();
@@ -94,7 +112,7 @@ await fs.writeFile(path.join(evidenceDir, 'revision.txt'), `${before.head}\n`);
 try {
   await git('clone', '--no-hardlinks', sourceDir, isolatedDir);
   await git('-C', isolatedDir, 'checkout', '--detach', config.revision);
-  const sourceLockfile = path.join(sourceDir, 'pnpm-lock.yaml');
+  const sourceLockfile = await sourceLockfilePath();
   const isolatedLockfile = path.join(isolatedDir, 'pnpm-lock.yaml');
   await fs.copyFile(sourceLockfile, isolatedLockfile);
   const lockfileHash = crypto.createHash('sha256')
@@ -108,19 +126,19 @@ try {
     ? path.resolve(requestedTarball)
     : await pack();
   await fs.access(tarball);
-  await runLogged('install-baseline.log', pnpm, ['install', '--frozen-lockfile']);
-  await runLogged('install.log', pnpm, ['add', '--save-exact', tarball]);
-  await runLogged('lint.log', pnpm, ['exec', 'eslint', '--ext', '.js', 'src/']);
+  await runLogged('install-baseline.log', pnpm, withRegistry(['install', '--frozen-lockfile']));
+  await runLogged('install.log', pnpm, withRegistry(['add', '--save-exact', tarball]));
+  await runLogged('lint.log', pnpm, withRegistry(['exec', 'eslint', '--ext', '.js', 'src/']));
 
   if (config.hasTests) {
-    await runLogged('test.log', pnpm, ['test', '--runInBand']);
+    await runLogged('test.log', pnpm, withRegistry(['test', '--runInBand']));
   } else {
     const packageInfo = JSON.parse(await fs.readFile(path.join(isolatedDir, 'package.json'), 'utf8'));
     assert.equal(packageInfo.scripts?.test, undefined);
     await fs.writeFile(path.join(evidenceDir, 'scripts.json'), '{"test":"absent"}\n');
   }
 
-  await runLogged('build.log', pnpm, ['build']);
+  await runLogged('build.log', pnpm, withRegistry(['build']));
   const projectConfig = JSON.parse(
     await fs.readFile(path.join(isolatedDir, 'project.config.json'), 'utf8'),
   );

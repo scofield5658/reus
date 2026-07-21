@@ -1,16 +1,33 @@
 # reus.js
 
-reus.js 是面向 Koa 2 应用的轻量二次封装。它统一项目配置、启动任务、请求体解析、Controller/Middleware、路由、代理、Swagger、开发进程和构建流程，让使用方聚焦业务代码。
+reus.js 是面向 Koa 3 应用的轻量二次封装。它统一项目配置、启动任务、请求体解析、Controller/Middleware、路由、代理、Swagger、开发进程和构建流程，让使用方聚焦业务代码。
 
 ## 环境与安装
 
-- Node.js 18+
-- Koa 2
+- Node.js 22.22.0+
+- Koa 3
 - 项目使用 ESM（`package.json` 中设置 `"type": "module"`）
+
+框架源码使用 TypeScript，并在发布前编译到 `dist/`；npm 包仍只运行编译后的 JavaScript，因此现有使用方的 JavaScript 配置、CLI 和导入方式无需调整。纯公共类型位于 `types/index.d.ts`，构建时会随编译产物一并发布。维护框架时可运行：
+
+```bash
+pnpm build:framework
+pnpm check
+```
 
 ```bash
 pnpm add reus.js
 ```
+
+## 框架源码结构
+
+- `src/index.ts`：包的运行时公共导出；发布入口仍为 `reus.js`。
+- `src/app.ts`、`src/common.ts`、`src/utils.ts`：应用初始化、使用方配置/插件加载和路由注册。
+- `src/config/`：框架默认项目配置。
+- `src/cli/`：`reus create`、`build`、`launch` 的命令入口、实现及运行模式常量。
+- `src/models/`、`src/helpers/`、`src/modules/`：面向应用运行时的模型、上下文 helper 与内置模块。
+- `types/index.d.ts`：仅包含公共类型及 Koa 上下文扩展声明；构建时复制到 `dist/types/`。
+- `bin/` 和 `.gulpfiles/`：保留为 npm/PM2 入口与 Gulp 任务的稳定源位置。
 
 ## CLI
 
