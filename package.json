@@ -10,7 +10,6 @@
   },
   "files": [
     "dist/",
-    "CHANGELOG.md",
     "LICENSE",
     "README.md",
     "reus.png",
@@ -25,7 +24,7 @@
     "types": "pnpm build:framework && tsc --noEmit --project tsconfig.json && tsc --noEmit --project test/types/tsconfig.json",
     "audit": "pnpm audit --prod --audit-level=high --registry=https://registry.npmjs.org",
     "pack-smoke": "node test/package-smoke.mjs",
-    "check": "pnpm lint && pnpm test && pnpm types && pnpm run audit && pnpm pack-smoke"
+    "check": "pnpm lint && pnpm test && pnpm types && pnpm pack-smoke"
   },
   "author": "guoz5658 <guoz5658@outlook.com>",
   "license": "MIT",

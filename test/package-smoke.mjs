@@ -43,7 +43,6 @@ async function createPreflightTarball(tempRoot) {
 
 function validateFiles(files) {
   const required = [
-    'CHANGELOG.md',
     'LICENSE',
     'README.md',
     'package.json',
