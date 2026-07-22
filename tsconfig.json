@@ -1,20 +1,28 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "target": "es5",
-    "module": "es2015",
-    "outDir": "types",
-    "moduleResolution": "node",
-    "importHelpers": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "outDir": "dist",
+    "rootDir": ".",
+    "moduleResolution": "NodeNext",
+    "strict": true,
     "noImplicitAny": false,
-    "allowJs": true,
-    "strict": false,
+    "strictPropertyInitialization": false,
+    "useUnknownInCatchVariables": false,
     "allowSyntheticDefaultImports": true,
-    "noEmitOnError": true
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "noEmitOnError": true,
+    "types": ["node"]
   },
   "include": [
-    "./src/**/*",
-    "./index.js"
+    "./.gulpfiles/**/*.ts",
+    "./bin/**/*.ts",
+    "./src/**/*.ts",
+    "./gulpfile.ts",
+    "./types/**/*.d.ts"
   ]
 }

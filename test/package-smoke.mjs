@@ -7,6 +7,8 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
+import { parseNpmPackResult } from '../scripts/npm-pack-result.mjs';
+
 const execFileAsync = promisify(execFile);
 const repositoryRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const args = process.argv.slice(2);
@@ -32,7 +34,7 @@ async function createPreflightTarball(tempRoot) {
     ['pack', '--json', '--pack-destination', packDir],
     { cwd: repositoryRoot, maxBuffer: 10 * 1024 * 1024 },
   );
-  const [result] = JSON.parse(stdout);
+  const [result] = parseNpmPackResult(stdout);
   return {
     tarball: path.join(packDir, result.filename),
     files: result.files.map((file) => file.path).sort(),
@@ -41,22 +43,22 @@ async function createPreflightTarball(tempRoot) {
 
 function validateFiles(files) {
   const required = [
-    '.config/index.js',
-    '.config/serve.js',
-    '.gulpfiles/serve-utils.js',
-    '.gulpfiles/serve.js',
     'CHANGELOG.md',
     'LICENSE',
     'README.md',
-    'command.js',
-    'commands/create-core.js',
-    'commands/process.js',
-    'common.js',
-    'gulpfile.js',
-    'index.js',
     'package.json',
-    'src/app.js',
-    'types/index.d.ts',
+    'dist/config/index.js',
+    'dist/.gulpfiles/serve-utils.js',
+    'dist/bin/app.js',
+    'dist/bin/shell.js',
+    'dist/cli/command.js',
+    'dist/cli/commands/create-core.js',
+    'dist/common.js',
+    'dist/gulpfile.js',
+    'dist/index.d.ts',
+    'dist/types/index.d.ts',
+    'dist/index.js',
+    'dist/app.js',
   ];
   for (const filename of required) {
     assert.ok(files.includes(filename), `tarball is missing ${filename}`);
@@ -64,6 +66,8 @@ function validateFiles(files) {
   for (const filename of files) {
     assert.doesNotMatch(filename, /^(?:test|consumer-validation|artifacts)\//);
     assert.doesNotMatch(filename, /^docs\/features\//);
+    assert.doesNotMatch(filename, /^types\//);
+    assert.ok(!filename.endsWith('.ts') || filename.endsWith('.d.ts'), `tarball contains TypeScript source: ${filename}`);
     assert.notEqual(filename, 'pnpm-lock.yaml');
   }
 }
@@ -80,6 +84,13 @@ async function installAndSmoke(tempRoot, tarball) {
     ['install', '--ignore-scripts', '--no-audit', '--no-fund', tarball],
     { cwd: installDir, maxBuffer: 20 * 1024 * 1024 },
   );
+  const packageInfo = JSON.parse(await fs.readFile(
+    path.join(installDir, 'node_modules', 'reus.js', 'package.json'),
+    'utf8',
+  ));
+  assert.equal(packageInfo.main, './dist/index.js');
+  assert.equal(packageInfo.types, './dist/index.d.ts');
+  assert.equal(packageInfo.bin.reus, './dist/bin/shell.js');
   await execFileAsync(
     process.execPath,
     [
@@ -93,7 +104,7 @@ async function installAndSmoke(tempRoot, tarball) {
     ? path.join(installDir, 'node_modules', '.bin', 'reus.cmd')
     : path.join(installDir, 'node_modules', '.bin', 'reus');
   const version = await execFileAsync(executable, ['--version'], { cwd: installDir });
-  assert.equal(version.stdout.trim(), '5.1.0');
+  assert.equal(version.stdout.trim(), '6.0.0');
   const help = await execFileAsync(executable, ['--help'], { cwd: installDir });
   assert.match(help.stdout, /Usage:/);
 }

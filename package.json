@@ -1,36 +1,28 @@
 {
   "name": "reus.js",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "description": "cli for webapp development & deployment by nodejs",
   "type": "module",
-  "main": "./index.js",
-  "typings": "types/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
-    "reus": "./bin/shell.js"
+    "reus": "./dist/bin/shell.js"
   },
   "files": [
-    ".config/",
-    ".gulpfiles/",
-    "bin/",
-    "commands/",
-    "constants/",
-    "src/",
-    "types/",
+    "dist/",
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
-    "command.js",
-    "common.js",
-    "gulpfile.js",
-    "index.js",
     "reus.png",
     "reus.svg"
   ],
   "scripts": {
+    "build:framework": "node scripts/clean-dist.mjs && tsc --project tsconfig.json && node scripts/flatten-dist.mjs && node scripts/copy-types.mjs",
+    "prepack": "pnpm build:framework",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "node --test test/*.test.js",
-    "types": "tsc --noEmit --project test/types/tsconfig.json",
+    "test": "pnpm build:framework && node --test test/*.test.js",
+    "types": "pnpm build:framework && tsc --noEmit --project tsconfig.json && tsc --noEmit --project test/types/tsconfig.json",
     "audit": "pnpm audit --prod --audit-level=high --registry=https://registry.npmjs.org",
     "pack-smoke": "node test/package-smoke.mjs",
     "check": "pnpm lint && pnpm test && pnpm types && pnpm run audit && pnpm pack-smoke"
@@ -49,7 +41,8 @@
   "dependencies": {
     "@babel/core": "7.29.7",
     "@babel/preset-env": "7.29.7",
-    "@types/koa": "^2.15.2",
+    "@koa/router": "15.7.0",
+    "@types/koa": "3.0.3",
     "browser-sync": "3.0.4",
     "colors": "1.4.0",
     "commander": "2.20.3",
@@ -57,13 +50,12 @@
     "gulp": "5.0.1",
     "gulp-babel": "^8.0.0",
     "gulp-clean": "0.4.0",
-    "http-proxy-middleware": "2.0.10",
-    "koa": "2.16.4",
-    "koa-body": "6.0.1",
+    "http-proxy-middleware": "4.2.0",
+    "koa": "3.2.1",
+    "koa-body": "8.0.0",
     "koa-compose": "4.1.0",
-    "koa-connect": "2.1.0",
-    "koa-mount": "4.0.0",
-    "koa-router": "12.0.1",
+    "koa-connect": "2.1.1",
+    "koa-mount": "4.2.0",
     "koa-static": "5.0.0",
     "koa2-swagger-ui": "5.12.0",
     "nodemon": "3.1.14",
@@ -75,31 +67,19 @@
   "devDependencies": {
     "@babel/eslint-parser": "7.29.7",
     "@eslint/js": "9.39.5",
+    "@types/node": "22.20.1",
+    "@typescript-eslint/parser": "8.65.0",
     "eslint": "9.39.5",
     "eslint-plugin-import": "2.32.0",
     "typescript": "5.9.3"
   },
   "engines": {
-    "node": ">=18"
+    "node": "^22.22.0 || ^24.0.0 || >=26.0.0"
   },
   "volta": {
-    "node": "18.20.7",
+    "node": "22.22.0",
     "npm": "8.19.4",
     "pnpm": "10.12.4"
   },
-  "packageManager": "pnpm@10.12.4",
-  "pnpm": {
-    "overrides": {
-      "brace-expansion@1.1.12": "1.1.13",
-      "follow-redirects@1.15.11": "1.16.0",
-      "handlebars@4.7.8": "4.7.9",
-      "immutable@3.8.2": "3.8.3",
-      "lodash@4.17.23": "4.18.0",
-      "minimatch@3.1.2": "3.1.4",
-      "picomatch@2.3.1": "2.3.2",
-      "qs@6.14.1": "6.15.2",
-      "socket.io-parser@4.2.5": "4.2.6",
-      "ws@8.18.3": "8.21.0"
-    }
-  }
+  "packageManager": "pnpm@10.12.4"
 }

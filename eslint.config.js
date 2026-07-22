@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import babelParser from '@babel/eslint-parser';
 import importPlugin from 'eslint-plugin-import';
+import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
@@ -12,6 +13,45 @@ export default [
     ],
   },
   js.configs.recommended,
+  {
+    files: ['**/*.ts'],
+    plugins: {
+      import: importPlugin,
+    },
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        sourceType: 'module',
+      },
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        fetch: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+      },
+    },
+    rules: {
+      indent: ['error', 2],
+      'linebreak-style': 'off',
+      quotes: ['error', 'single'],
+      semi: ['error', 'always'],
+      'no-console': 'off',
+      'no-debugger': 'off',
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      'import/order': [
+        'error',
+        {
+          groups: ['builtin', 'external', 'parent', 'sibling', 'index'],
+          'newlines-between': 'always',
+        },
+      ],
+    },
+  },
   {
     files: ['**/*.js', '**/*.mjs'],
     plugins: {

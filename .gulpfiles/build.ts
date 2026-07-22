@@ -1,3 +1,6 @@
+// Dynamic user-project configuration is intentionally validated at runtime.
+// @ts-nocheck
+
 import path from 'path';
 import { createRequire } from 'module';
 

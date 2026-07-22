@@ -1,3 +1,6 @@
+// Rate limiter configuration accepts driver-specific consumer options.
+// @ts-nocheck
+
 /**
  * Module dependencies.
  */

@@ -55,7 +55,7 @@ export async function startAppFixture(t, overrides = {}) {
     await fs.mkdir(path.dirname(target), { recursive: true });
     await fs.writeFile(target, contents);
   }
-  const child = spawn(process.execPath, [path.join(repositoryRoot, 'bin', 'app.js')], {
+  const child = spawn(process.execPath, [path.join(repositoryRoot, 'dist', 'bin', 'app.js')], {
     cwd: repositoryRoot,
     env: {
       ...process.env,

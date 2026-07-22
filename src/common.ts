@@ -1,9 +1,12 @@
+// Dynamic project and plugin modules are loaded from consumer directories.
+// @ts-nocheck
+
 import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
 import { createRequire } from 'module';
 
-import defaultConfig from './.config/index.js';
+import defaultConfig from './config/index.js';
 
 const require = createRequire(import.meta.url);
 

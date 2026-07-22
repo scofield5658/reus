@@ -17,7 +17,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.20.7
+          node-version: 22.22.0
 
       - name: Enable pnpm
         run: |
@@ -27,17 +27,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm exec eslint --ext .js src/
+      - name: Verify package
+        run: pnpm check
+
+      - name: Build framework distribution
+        run: pnpm build:framework
 
       - name: Pack
-        run: pnpm pack --pack-destination dist
+        run: |
+          mkdir -p artifacts
+          pnpm pack --pack-destination artifacts
 
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
           name: reus.js-${{ github.ref_name }}
-          path: dist/reus.js-*.tgz
+          path: artifacts/reus.js-*.tgz
           if-no-files-found: error
           retention-days: 30
 
@@ -50,7 +55,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.20.7
+          node-version: 22.22.0
           registry-url: https://registry.npmjs.org/
 
       - name: Enable pnpm
@@ -60,6 +65,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Verify package
+        run: pnpm check
+
+      - name: Build framework distribution
+        run: pnpm build:framework
 
       - name: Publish to npm
         run: npm publish

@@ -1,6 +1,9 @@
 import qsStringify from 'qs';
+import type { Context, Next } from 'koa';
 
-const buildUrl = (baseUrl, qs) => {
+import type { HttpOptions, HttpResponse } from '../../types/index.js';
+
+const buildUrl = (baseUrl: string, qs?: Record<string, unknown>) => {
   if (!qs || typeof qs !== 'object' || Object.keys(qs).length === 0) {
     return baseUrl;
   }
@@ -9,11 +12,11 @@ const buildUrl = (baseUrl, qs) => {
   return `${baseUrl}${separator}${searchParams}`;
 };
 
-const hasHeader = (headers, name) => Object.keys(headers)
+const hasHeader = (headers: Record<string, string>, name: string) => Object.keys(headers)
   .some((header) => header.toLowerCase() === name.toLowerCase());
 
-const http = async (opts = {}) => {
-  const url = buildUrl(opts.uri || opts.url, opts.qs);
+const http = async <T = unknown>(opts: HttpOptions = {}): Promise<HttpResponse<T>> => {
+  const url = buildUrl(opts.uri || opts.url || '', opts.qs);
   const method = (opts.method || 'GET').toUpperCase();
   const headers = { ...opts.headers };
   const json = opts.json !== false;
@@ -21,12 +24,12 @@ const http = async (opts = {}) => {
     headers['Content-Type'] = 'application/json';
   }
 
-  let body = opts.body;
+  let body: BodyInit | undefined = opts.body as BodyInit | undefined;
   if (json && body !== undefined) {
     body = JSON.stringify(body);
   }
 
-  const fetchOptions = {
+  const fetchOptions: RequestInit = {
     method,
     headers,
     body: method === 'GET' || method === 'HEAD' ? undefined : body,
@@ -36,25 +39,25 @@ const http = async (opts = {}) => {
   }
 
   const response = await fetch(url, fetchOptions);
-  let data;
+  let data: T | undefined;
   if (opts.encoding === null) {
-    data = Buffer.from(await response.arrayBuffer());
+    data = Buffer.from(await response.arrayBuffer()) as T;
   } else {
     const text = await response.text();
     if (text) {
       if (!json) {
-        data = text;
+        data = text as T;
       } else {
         try {
-          data = JSON.parse(text);
+          data = JSON.parse(text) as T;
         } catch {
-          data = text;
+          data = text as T;
         }
       }
     }
   }
 
-  const responseHeaders = {};
+  const responseHeaders: Record<string, string | string[]> = {};
   for (const [name, value] of response.headers.entries()) {
     if (name === 'set-cookie') {
       responseHeaders[name] = [
@@ -74,7 +77,7 @@ const http = async (opts = {}) => {
   return result;
 };
 
-export default function (ctx, next) {
+export default function (ctx: Context, next: Next) {
   ctx.http = http;
   return next();
 }

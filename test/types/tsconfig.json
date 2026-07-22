@@ -7,7 +7,7 @@
     "moduleResolution": "NodeNext",
     "baseUrl": "../..",
     "paths": {
-      "reus.js": ["types/index.d.ts"]
+      "reus.js": ["dist/index.d.ts"]
     }
   },
   "include": ["fixture.ts"]

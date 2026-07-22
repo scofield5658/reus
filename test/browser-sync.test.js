@@ -6,11 +6,11 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { getProjectConfig } from '../common.js';
+import { getProjectConfig } from '../dist/common.js';
 import {
   createBrowserSyncOptions,
   reloadBrowserSync,
-} from '../.gulpfiles/serve-utils.js';
+} from '../dist/.gulpfiles/serve-utils.js';
 
 import { createAppFixture, repositoryRoot } from './helpers/fixture.js';
 
@@ -107,7 +107,7 @@ async function startDev(t, browserSync) {
   const fixture = await createAppFixture(t, { browserSync });
   const child = spawn(
     process.execPath,
-    ['command.js', 'launch', fixture.projectDir, '--mode', 'dev'],
+    ['dist/cli/command.js', 'launch', fixture.projectDir, '--mode', 'dev'],
     {
       cwd: repositoryRoot,
       detached: true,
