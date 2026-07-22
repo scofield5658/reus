@@ -7,6 +7,8 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
+import { parseNpmPackResult } from '../../scripts/npm-pack-result.mjs';
+
 const execFileAsync = promisify(execFile);
 const repositoryRoot = path.dirname(path.dirname(path.dirname(fileURLToPath(import.meta.url))));
 const args = process.argv.slice(2);
@@ -78,7 +80,7 @@ async function pack() {
     ['pack', '--json', '--pack-destination', packDir],
     { cwd: repositoryRoot, maxBuffer: 20 * 1024 * 1024 },
   );
-  const [result] = JSON.parse(stdout);
+  const [result] = parseNpmPackResult(stdout);
   return path.join(packDir, result.filename);
 }
 

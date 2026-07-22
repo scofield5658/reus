@@ -8,7 +8,7 @@ reus.js 是基于 Koa 3 的应用框架和 CLI。它通过约定式配置、Cont
 
 ## 目录和入口
 
-- `src/index.ts`：包的公共运行时导出；npm `main` 指向其编译结果 `dist/src/index.js`。
+- `src/index.ts`：包的公共运行时导出；npm `main` 指向其编译结果 `dist/index.js`。
 - `src/app.ts`：Koa 应用初始化和监听逻辑。
 - `src/common.ts`：读取使用方配置、插件和项目路径。
 - `src/utils.ts`：普通路由、代理路由和中间件注册。

@@ -27,13 +27,13 @@ program
     let bootstrap;
     const gulpShell = os.platform() === 'win32' ? 'gulp.cmd' : 'gulp';
     if (process.env.REUS_PROJECT_ENV === 'dev') {
-      let gulpEntry = path.resolve(__dirname, '..', '..', '..', '..', 'node_modules', '.bin', gulpShell);
-      const reusPath = path.resolve(__dirname, '..', '..', '..', 'gulpfile.js');
+      let gulpEntry = path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', gulpShell);
+      const reusPath = path.resolve(__dirname, '..', '..', 'gulpfile.js');
       const spawnOpts = os.platform() === 'win32' ? { shell: true } : {};
       if (fs.existsSync(gulpEntry)) {
         bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'serve'], spawnOpts);
       } else {
-        gulpEntry = path.resolve(__dirname, '..', '..', '..', '..', 'node_modules', 'gulp', 'bin', 'gulp.js');
+        gulpEntry = path.resolve(__dirname, '..', '..', '..', 'node_modules', 'gulp', 'bin', 'gulp.js');
         if (fs.existsSync(gulpEntry)) {
           bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'serve'], spawnOpts);
         } else {
@@ -47,7 +47,7 @@ program
         setFailureExitCode(error);
       }
     } else {
-      const appEntry = path.resolve(__dirname, '..', '..', '..', 'bin', 'app.js');
+      const appEntry = path.resolve(__dirname, '..', '..', 'bin', 'app.js');
       if (fs.existsSync(appEntry)) {
         await import(pathToFileURL(appEntry).href);
       } else {

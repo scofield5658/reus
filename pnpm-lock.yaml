@@ -4,18 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  brace-expansion@1.1.12: 1.1.16
-  follow-redirects@1.15.11: 1.16.0
-  handlebars@4.7.8: 4.7.9
-  immutable@3.8.2: 3.8.3
-  lodash@4.17.23: 4.18.0
-  minimatch@3.1.2: 3.1.4
-  picomatch@2.3.1: 2.3.2
-  qs@6.14.1: 6.15.2
-  socket.io-parser@4.2.5: 4.2.6
-  ws@8.18.3: 8.21.0
-
 importers:
 
   .:
@@ -3008,8 +2996,8 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  ws@8.21.0:
-    resolution: {integrity: sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==}
+  ws@8.18.3:
+    resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -4536,7 +4524,7 @@ snapshots:
       '@socket.io/component-emitter': 3.1.2
       debug: 4.4.3(supports-color@5.5.0)
       engine.io-parser: 5.2.3
-      ws: 8.21.0
+      ws: 8.18.3
       xmlhttprequest-ssl: 2.1.2
     transitivePeerDependencies:
       - bufferutil
@@ -6534,7 +6522,7 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@8.21.0: {}
+  ws@8.18.3: {}
 
   ws@8.21.1: {}
 

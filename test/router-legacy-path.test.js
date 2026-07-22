@@ -4,8 +4,8 @@ import test from 'node:test';
 
 import Koa from 'koa';
 
-import { Controller } from '../dist/src/models/index.js';
-import { registerRoutes } from '../dist/src/utils.js';
+import { Controller } from '../dist/models/index.js';
+import { registerRoutes } from '../dist/utils.js';
 
 class LegacyPathController extends Controller {
   async index() {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import httpHelper from '../dist/src/helpers/http.js';
+import httpHelper from '../dist/helpers/http.js';
 
 import { listen } from './helpers/server.js';
 

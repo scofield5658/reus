@@ -24,14 +24,14 @@ program
     log.info(`========== Output Dir: ${process.env.REUS_PROJECT_OUTPUT} ==========`);
 
     const gulpShell = os.platform() === 'win32' ? 'gulp.cmd' : 'gulp';
-    let gulpEntry = path.resolve(__dirname, '..', '..', '..', '..', 'node_modules', '.bin', gulpShell);
-    const reusPath = path.resolve(__dirname, '..', '..', '..', 'gulpfile.js');
+    let gulpEntry = path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', gulpShell);
+    const reusPath = path.resolve(__dirname, '..', '..', 'gulpfile.js');
     const spawnOpts = os.platform() === 'win32' ? { shell: true } : {};
     let bootstrap;
     if (fs.existsSync(gulpEntry)) {
       bootstrap = child_process.spawn(gulpEntry, ['--gulpfile', reusPath, 'build'], spawnOpts);
     } else {
-      gulpEntry = path.resolve(__dirname, '..', '..', '..', '..', 'node_modules', 'gulp', 'bin', 'gulp.js');
+      gulpEntry = path.resolve(__dirname, '..', '..', '..', 'node_modules', 'gulp', 'bin', 'gulp.js');
       if (fs.existsSync(gulpEntry)) {
         bootstrap = child_process.spawn('node', [gulpEntry, '--gulpfile', reusPath, 'build'], spawnOpts);
       } else {

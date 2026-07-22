@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import jsonHelper from '../dist/src/helpers/json.js';
+import jsonHelper from '../dist/helpers/json.js';
 
 test('ctx.json keeps status, content type and serialized body behavior', async () => {
   const ctx = {};

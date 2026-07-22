@@ -7,6 +7,8 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
+import { parseNpmPackResult } from '../scripts/npm-pack-result.mjs';
+
 const execFileAsync = promisify(execFile);
 const repositoryRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const args = process.argv.slice(2);
@@ -32,8 +34,7 @@ async function createPreflightTarball(tempRoot) {
     ['pack', '--json', '--pack-destination', packDir],
     { cwd: repositoryRoot, maxBuffer: 10 * 1024 * 1024 },
   );
-  const jsonStart = stdout.lastIndexOf('\n[');
-  const [result] = JSON.parse(jsonStart >= 0 ? stdout.slice(jsonStart + 1) : stdout);
+  const [result] = parseNpmPackResult(stdout);
   return {
     tarball: path.join(packDir, result.filename),
     files: result.files.map((file) => file.path).sort(),
@@ -46,18 +47,18 @@ function validateFiles(files) {
     'LICENSE',
     'README.md',
     'package.json',
-    'dist/src/config/index.js',
+    'dist/config/index.js',
     'dist/.gulpfiles/serve-utils.js',
     'dist/bin/app.js',
     'dist/bin/shell.js',
-    'dist/src/cli/command.js',
-    'dist/src/cli/commands/create-core.js',
-    'dist/src/common.js',
+    'dist/cli/command.js',
+    'dist/cli/commands/create-core.js',
+    'dist/common.js',
     'dist/gulpfile.js',
-    'dist/src/index.d.ts',
+    'dist/index.d.ts',
     'dist/types/index.d.ts',
-    'dist/src/index.js',
-    'dist/src/app.js',
+    'dist/index.js',
+    'dist/app.js',
   ];
   for (const filename of required) {
     assert.ok(files.includes(filename), `tarball is missing ${filename}`);
@@ -87,8 +88,8 @@ async function installAndSmoke(tempRoot, tarball) {
     path.join(installDir, 'node_modules', 'reus.js', 'package.json'),
     'utf8',
   ));
-  assert.equal(packageInfo.main, './dist/src/index.js');
-  assert.equal(packageInfo.types, './dist/src/index.d.ts');
+  assert.equal(packageInfo.main, './dist/index.js');
+  assert.equal(packageInfo.types, './dist/index.d.ts');
   assert.equal(packageInfo.bin.reus, './dist/bin/shell.js');
   await execFileAsync(
     process.execPath,

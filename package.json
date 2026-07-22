@@ -3,8 +3,8 @@
   "version": "6.0.0",
   "description": "cli for webapp development & deployment by nodejs",
   "type": "module",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
     "reus": "./dist/bin/shell.js"
   },
@@ -17,7 +17,7 @@
     "reus.svg"
   ],
   "scripts": {
-    "build:framework": "tsc --project tsconfig.json && node scripts/copy-types.mjs",
+    "build:framework": "node scripts/clean-dist.mjs && tsc --project tsconfig.json && node scripts/flatten-dist.mjs && node scripts/copy-types.mjs",
     "prepack": "pnpm build:framework",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -81,19 +81,5 @@
     "npm": "8.19.4",
     "pnpm": "10.12.4"
   },
-  "packageManager": "pnpm@10.12.4",
-  "pnpm": {
-    "overrides": {
-      "brace-expansion@1.1.12": "1.1.16",
-      "follow-redirects@1.15.11": "1.16.0",
-      "handlebars@4.7.8": "4.7.9",
-      "immutable@3.8.2": "3.8.3",
-      "lodash@4.17.23": "4.18.0",
-      "minimatch@3.1.2": "3.1.4",
-      "picomatch@2.3.1": "2.3.2",
-      "qs@6.14.1": "6.15.2",
-      "socket.io-parser@4.2.5": "4.2.6",
-      "ws@8.18.3": "8.21.0"
-    }
-  }
+  "packageManager": "pnpm@10.12.4"
 }

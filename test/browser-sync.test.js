@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { getProjectConfig } from '../dist/src/common.js';
+import { getProjectConfig } from '../dist/common.js';
 import {
   createBrowserSyncOptions,
   reloadBrowserSync,
@@ -107,7 +107,7 @@ async function startDev(t, browserSync) {
   const fixture = await createAppFixture(t, { browserSync });
   const child = spawn(
     process.execPath,
-    ['dist/src/cli/command.js', 'launch', fixture.projectDir, '--mode', 'dev'],
+    ['dist/cli/command.js', 'launch', fixture.projectDir, '--mode', 'dev'],
     {
       cwd: repositoryRoot,
       detached: true,
